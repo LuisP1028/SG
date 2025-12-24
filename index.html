@@ -352,7 +352,7 @@
                     <div class="chapter-content">
 
                         <details class="subsection">
-                            <summary>Log-Structured (LSM-Trees)</summary>
+                            <summary>Log-Structured (LSM-Trees) [IMMUTABLE]</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Log-structured storage engines append writes to an immutable log, using in-memory memtables flushed to sorted SSTables on disk, with background compaction merging files to optimize read performance while handling high write volumes efficiently in big data scenarios.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> High write throughput; slower reads (checks multiple files); compaction causes latency spikes.</div>
@@ -361,7 +361,7 @@
                         </details>
 
                         <details class="subsection">
-                            <summary>Page-Oriented (B-Trees)</summary>
+                            <summary>Page-Oriented (B-Trees) [MUTABLE]</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Page-oriented engines like B-trees organize data in fixed-size blocks with balanced tree indices for range queries and updates, performing in-place modifications with write-ahead logging for crash recovery, balancing read/write performance in transactional databases.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Fast, predictable reads; write amplification (changing 1 byte rewrites 4KB).</div>

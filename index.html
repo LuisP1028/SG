@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDIA Study Guide // TERMINAL MODE</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --text-color: #00ff33;
+            --dim-color: #004411;
+            --border-width: 2px;
+            --shadow-offset: 4px;
+            --font-main: "Courier New", Courier, monospace;
+            --font-headings: "Arial Black", Gadget, sans-serif;
+        }
+
+        /* --- GLOBAL STYLES --- */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            line-height: 1.4;
+            /* Dither Background Pattern (Dark on Dark) */
+            background-image: 
+                linear-gradient(45deg, #111111 25%, transparent 25%), 
+                linear-gradient(-45deg, #111111 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #111111 75%), 
+                linear-gradient(-45deg, transparent 75%, #111111 75%);
+            background-size: 4px 4px;
+            background-position: 0 0, 0 2px, 2px -2px, -2px 0px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            background: var(--bg-color);
+            border: var(--border-width) solid var(--text-color);
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--dim-color);
+            padding: 20px;
+            z-index: 10;
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1 {
+            font-family: var(--font-headings);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            font-size: 2.5rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 4px solid var(--text-color);
+            padding-bottom: 10px;
+            text-align: center;
+            text-shadow: 2px 2px 0px var(--dim-color);
+        }
+
+        /* --- ACCORDION STYLES --- */
+        details {
+            margin-bottom: 15px;
+            border: var(--border-width) solid var(--text-color);
+            background: var(--bg-color);
+            transition: all 0.1s;
+        }
+
+        summary {
+            cursor: pointer;
+            padding: 12px 15px;
+            list-style: none; /* Hide default triangle */
+            position: relative;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        /* Custom Indicator */
+        summary::after {
+            content: "[ + ]";
+            font-family: var(--font-main);
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        details[open] > summary::after {
+            content: "[ - ]";
+        }
+
+        /* --- HIERARCHY LEVELS --- */
+        
+        /* Level 1: Parts */
+        details.part {
+            box-shadow: 3px 3px 0px var(--dim-color);
+        }
+        
+        details.part > summary {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+            font-family: var(--font-headings);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        details.part > summary::after {
+            color: var(--bg-color);
+        }
+        
+        .part-content {
+            padding: 15px;
+            border-top: 2px solid var(--text-color);
+            background-image: radial-gradient(var(--dim-color) 1px, transparent 0);
+            background-size: 4px 4px;
+        }
+
+        .part-focus {
+            font-style: italic;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #001100;
+            border: 1px dashed var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        /* Level 2: Chapters */
+        details.chapter {
+            margin-left: 0;
+            box-shadow: 2px 2px 0px #000;
+            border-color: var(--dim-color);
+        }
+
+        details.chapter > summary {
+            background-color: #111;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            border-bottom: 1px solid transparent;
+        }
+
+        details.chapter[open] > summary {
+            border-bottom: 2px solid var(--text-color);
+        }
+
+        .chapter-content {
+            padding: 15px;
+            background: var(--bg-color);
+        }
+
+        /* Level 3: Subsections (Concepts) */
+        details.subsection {
+            border: 1px solid var(--dim-color);
+            box-shadow: none;
+            margin-bottom: 10px;
+        }
+
+        details.subsection > summary {
+            background-color: var(--bg-color);
+            font-size: 1rem;
+            border-bottom: 1px dotted var(--dim-color);
+            color: var(--text-color);
+        }
+        
+        details.subsection > summary:hover {
+            background-color: #002200;
+        }
+
+        details.subsection[open] > summary {
+            border-bottom: 1px solid var(--text-color);
+            background-color: var(--text-color);
+            color: black;
+        }
+        
+        details.subsection[open] > summary::after {
+            color: black;
+        }
+
+        .subsection-content {
+            padding: 15px;
+            font-size: 0.95rem;
+            color: #ccffcc;
+        }
+
+        /* Content Formatting */
+        .label {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            background: var(--text-color);
+            color: black;
+            padding: 1px 4px;
+            margin-right: 5px;
+        }
+
+        .trade-offs {
+            margin-top: 8px;
+            padding: 8px;
+            background: #0a1a0a;
+            border-left: 3px solid var(--text-color);
+            font-style: italic;
+            color: #aaffaa;
+        }
+
+        .use-cases, .examples {
+            margin-top: 8px;
+            font-family: var(--font-main);
+            color: #66cc66;
+        }
+
+        ul {
+            padding-left: 20px;
+            margin: 5px 0;
+        }
+
+        /* --- CRT OVERLAY EFFECT --- */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 255, 50, 0),
+                rgba(0, 255, 50, 0) 50%,
+                rgba(0, 0, 0, 0.2) 50%,
+                rgba(0, 0, 0, 0.2)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 998;
+            opacity: 0.05;
+            background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .container { padding: 10px; }
+            summary { font-size: 0.9rem; }
+            .part-content, .chapter-content { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scanlines"></div>
+    <div class="noise"></div>
+
+    <div class="container">
+        <h1>DDIA Study Guide</h1>
+        
+        <!-- PART I -->
+        <details class="part">
+            <summary>Part I: Foundations of Data Systems</summary>
+            <div class="part-content">
+                <div class="part-focus">
+                    <strong>Focus:</strong> Reliability, Scalability, Maintainability, Data Models, Storage, and Encoding.
+                </div>
+
+                <!-- Chapter 1 -->
+                <details class="chapter">
+                    <summary>1. System Design Goals (Chapter 1)</summary>
+                    <div class="chapter-content">
+                        
+                        <details class="subsection">
+                            <summary>Reliability</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Reliability ensures the system functions as expected despite hardware failures, software bugs, or human errors, using techniques like fault tolerance, replication, and recovery mechanisms to prevent catastrophic failures and maintain service availability. This foundational quality prioritizes correctness over time, often tested through deliberate fault injection.<br>
+                                <div class="trade-offs"><span class="label">Context:</span> Redundancy increases cost/complexity. Chaos Engineering (e.g., Netflix Chaos Monkey) tests this.</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Scalability</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Scalability describes a system's capacity to handle growing load by measuring response time percentiles and throughput, employing strategies like load balancing and partitioning to sustain performance without degradation as user demands or data volumes increase exponentially.<br>
+                                <div class="trade-offs"><span class="label">Context:</span> Horizontal scaling (shared-nothing) adds network complexity vs. Vertical scaling (hardware limits).</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Maintainability</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Maintainability focuses on making systems operable, simple, and evolvable, incorporating operability for smooth operations, simplicity to reduce accidental complexity, and evolvability for easy adaptations, ensuring long-term viability through modular design and documentation.<br>
+                                <div class="trade-offs"><span class="label">Context:</span> Abstractions hide complexity but can leak; requires good observability and automation.</div>
+                            </div>
+                        </details>
+
+                    </div>
+                </details>
+
+                <!-- Chapter 2 -->
+                <details class="chapter">
+                    <summary>2. Data Models & Query Languages (Chapter 2)</summary>
+                    <div class="chapter-content">
+
+                        <details class="subsection">
+                            <summary>Relational Model (SQL)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> The relational model structures data in tables with rows and columns, enforcing schemas and supporting declarative SQL queries for joins, filters, and aggregations, providing strong consistency and ACID properties ideal for structured, normalized data with complex relationships.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Excellent for joins/integrity; suffers "impedance mismatch" with OOP code; schema changes are heavy.</div>
+                                <div class="use-cases"><span class="label">Use Cases:</span> Financial ledgers, personnel records, strictly structured data.</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Document Model (NoSQL)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Document models store hierarchical, self-contained data structures like JSON documents, allowing flexible schemas inferred at read time, optimizing for locality in denormalized data access but requiring application-level handling for relationships and consistency.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> High data locality (one seek reads all); poor support for many-to-many joins.</div>
+                                <div class="use-cases"><span class="label">Use Cases:</span> User profiles, content management, heterogeneous patient summaries.</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Graph Model (Property Graph)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Graph models represent data as vertices and edges with properties, enabling efficient traversal queries via languages like Cypher, suited for interconnected data where relationships are first-class, supporting deep queries without costly joins in relational systems.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Unbeatable for complex many-to-many logic; difficult to shard across multiple nodes.</div>
+                                <div class="use-cases"><span class="label">Use Cases:</span> Social networks, fraud detection networks, knowledge graphs.</div>
+                            </div>
+                        </details>
+
+                    </div>
+                </details>
+
+                <!-- Chapter 3 -->
+                <details class="chapter">
+                    <summary>3. Storage Engines (Chapter 3)</summary>
+                    <div class="chapter-content">
+
+                        <details class="subsection">
+                            <summary>Log-Structured (LSM-Trees)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Log-structured storage engines append writes to an immutable log, using in-memory memtables flushed to sorted SSTables on disk, with background compaction merging files to optimize read performance while handling high write volumes efficiently in big data scenarios.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> High write throughput; slower reads (checks multiple files); compaction causes latency spikes.</div>
+                                <div class="examples"><span class="label">Examples:</span> Cassandra, LevelDB, RocksDB (high ingestion telemetry).</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Page-Oriented (B-Trees)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Page-oriented engines like B-trees organize data in fixed-size blocks with balanced tree indices for range queries and updates, performing in-place modifications with write-ahead logging for crash recovery, balancing read/write performance in transactional databases.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Fast, predictable reads; write amplification (changing 1 byte rewrites 4KB).</div>
+                                <div class="examples"><span class="label">Examples:</span> PostgreSQL, MySQL, SQL Server (transactional systems).</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Column-Oriented Storage</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Column-oriented storage groups values by column rather than row, enabling high compression ratios through run-length encoding and bitmap indices, accelerating analytical queries on large datasets by reading only relevant columns during scans and aggregations.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> High compression/fast analytics; terrible for single-row transactional writes.</div>
+                                <div class="examples"><span class="label">Examples:</span> Redshift, Snowflake, ClickHouse (Data Warehousing/OLAP).</div>
+                            </div>
+                        </details>
+
+                    </div>
+                </details>
+
+                <!-- Chapter 4 -->
+                <details class="chapter">
+                    <summary>4. Data Encoding (Chapter 4)</summary>
+                    <div class="chapter-content">
+
+                        <details class="subsection">
+                            <summary>Binary with Schema (Avro/Protobuf/Thrift)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Schema-based binary formats encode data compactly using predefined schemas for fields and types, supporting forward/backward compatibility through schema evolution rules, ideal for efficient serialization in distributed systems with evolving data structures.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Efficient size/speed; supports schema evolution; requires schema registry; not human-readable.</div>
+                                <div class="use-cases"><span class="label">Use Cases:</span> Microservices (gRPC), archival of massive datasets.</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Textual Formats (JSON/XML)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Textual formats like JSON and XML provide human-readable, self-describing data interchange with nested structures and optional schemas, facilitating debugging and interoperability across languages, though at the cost of larger payloads and parsing overhead.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Flexible and accessible; verbose (high space usage) and slower parsing.</div>
+                            </div>
+                        </details>
+
+                    </div>
+                </details>
+
+            </div>
+        </details>
+
+        <!-- PART II -->
+        <details class="part">
+            <summary>Part II: Distributed Data</summary>
+            <div class="part-content">
+                <div class="part-focus">
+                    <strong>Focus:</strong> Replication, Partitioning, Transactions, Consistency, and Consensus.
+                </div>
+
+                <!-- Chapter 5 -->
+                <details class="chapter">
+                    <summary>5. Replication Models (Chapter 5)</summary>
+                    <div class="chapter-content">
+
+                        <details class="subsection">
+                            <summary>Single-Leader</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> In single-leader replication, writes are directed to a primary node that sequences operations and propagates changes synchronously or asynchronously to followers, ensuring simplicity in conflict-free updates but introducing failover complexity for high availability.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Simple logic; leader is a write bottleneck and single point of failure.</div>
+                                <div class="use-cases"><span class="label">Use Cases:</span> Standard Web Apps, Postgres/MySQL defaults.</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Multi-Leader</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Multi-leader setups allow writes on multiple nodes, typically across regions, with asynchronous replication handling conflicts via methods like conflict-free replicated data types or custom resolution, enhancing write availability in geographically distributed systems.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> High availability/partition tolerance; complex conflict resolution (e.g., Last Write Wins).</div>
+                                <div class="use-cases"><span class="label">Use Cases:</span> Collaborative editing, multi-region syncing.</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Leaderless (Dynamo-style)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Leaderless replication distributes writes and reads across nodes using quorums (W + R > N) for consistency, employing hinted handoffs and anti-entropy for repair, prioritizing availability over strict ordering in highly fault-tolerant, partition-resilient environments.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Max availability; hard to ensure linearizability; risk of stale reads (requires read repair).</div>
+                                <div class="use-cases"><span class="label">Use Cases:</span> Amazon Dynamo, Cassandra, Riak (always-on shopping carts).</div>
+                            </div>
+                        </details>
+
+                    </div>
+                </details>
+
+                <!-- Chapter 6 -->
+                <details class="chapter">
+                    <summary>6. Replication Lag & Consistency Guarantees</summary>
+                    <div class="chapter-content">
+
+                        <details class="subsection">
+                            <summary>Read-Your-Writes</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Read-your-writes consistency ensures a user sees their own modifications immediately after writing, often implemented by directing subsequent reads to the same replica or using causal tracking, preventing surprises in user sessions across distributed replicas.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Requires routing user reads to the specific leader/replica handling their write.</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Monotonic Reads</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Monotonic reads guarantee that once a user observes a particular version of data, future reads will not return older versions, achieved by sticky sessions or version vectors, avoiding anomalous backward jumps in time during replica switches or failures.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Achieved by pinning a user ID to a specific replica.</div>
+                            </div>
+                        </details>
+
+                    </div>
+                </details>
+
+                <!-- Chapter 7 -->
+                <details class="chapter">
+                    <summary>7. Partitioning / Sharding (Chapter 6)</summary>
+                    <div class="chapter-content">
+
+                        <details class="subsection">
+                            <summary>Key Range Partitioning</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Key range partitioning divides data into contiguous key segments assigned to shards, supporting efficient range scans and ordered access but prone to imbalances if keys are not uniformly distributed, requiring dynamic rebalancing to mitigate hotspots.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Efficient range queries; high risk of "hotspots" if keys are sequential (e.g., timestamps).</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Hash Partitioning</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Hash partitioning applies a hash function to keys for even distribution across shards, promoting load balance and scalability but sacrificing key order, making range queries inefficient as they require scattering across all partitions.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Uniform data distribution (load balance); destroys ordering (no range scans).</div>
+                            </div>
+                        </details>
+
+                    </div>
+                </details>
+
+                <!-- Chapter 8 -->
+                <details class="chapter">
+                    <summary>8. Transactions & Isolation Levels (Chapter 7)</summary>
+                    <div class="chapter-content">
+
+                        <details class="subsection">
+                            <summary>Read Committed</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Read committed isolation prevents dirty reads and writes by ensuring transactions only see committed data, using row locks for writers but allowing non-repeatable reads where data changes between reads within the same transaction.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Default in many DBs; subject to "lost updates" and "non-repeatable reads."</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Snapshot Isolation (MVCC)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Snapshot isolation provides each transaction a consistent view of the database at its start time via multi-version concurrency control, allowing non-blocking reads but potentially leading to write skew anomalies in concurrent updates.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Solves non-repeatable reads; subject to "Write Skew" (logic based on obsolete premises).</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Serializable</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Serializable isolation ensures transactions execute as if sequentially, using two-phase locking or serializable snapshot isolation to detect conflicts, providing the highest integrity but at the expense of reduced concurrency and potential deadlocks.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Perfect integrity; performance penalty via 2PL (locking) or SSI (abort rates).</div>
+                            </div>
+                        </details>
+
+                    </div>
+                </details>
+
+                <!-- Chapter 9 -->
+                <details class="chapter">
+                    <summary>9. Distributed Consistency & Consensus (Chapters 8 & 9)</summary>
+                    <div class="chapter-content">
+
+                        <details class="subsection">
+                            <summary>Linearizability (Strong Consistency)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Linearizability makes a distributed system appear as a single coherent copy with atomic operations visible immediately, satisfying strict consistency but incurring latency from synchronization, often conflicting with availability under network partitions per CAP.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Network delays kill performance; system halts during partitions (CAP Theorem).</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Logical Clocks (Lamport/Vector)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Logical clocks like Lamport timestamps or vector clocks track causal dependencies between events without relying on synchronized physical clocks, enabling detection of happens-before relationships in distributed systems for ordering and conflict resolution.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Orders events accurately without relying on unreliable physical (NTP) clocks.</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Consensus Algorithms (Paxos/Raft)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Consensus algorithms such as Paxos or Raft enable nodes to agree on values despite failures, using quorums for leader election and log replication, crucial for maintaining consistent state in distributed databases and coordination services like ZooKeeper.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Essential for leader election/atomic broadcast; slow/blocking if quorum is lost.</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Two-Phase Commit (2PC)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Two-phase commit coordinates atomic transactions across participants with a prepare phase for voting and a commit phase for execution, ensuring all-or-nothing outcomes but vulnerable to blocking if the coordinator fails during the process.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Blocks if coordinator fails; poor fault tolerance compared to consensus.</div>
+                            </div>
+                        </details>
+
+                    </div>
+                </details>
+
+            </div>
+        </details>
+
+        <!-- PART III -->
+        <details class="part">
+            <summary>Part III: Derived Data</summary>
+            <div class="part-content">
+                <div class="part-focus">
+                    <strong>Focus:</strong> Batch Processing, Stream Processing, and Architecture Patterns.
+                </div>
+
+                <!-- Chapter 10 -->
+                <details class="chapter">
+                    <summary>10. Batch Processing (Chapter 10)</summary>
+                    <div class="chapter-content">
+
+                        <details class="subsection">
+                            <summary>MapReduce</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> MapReduce processes large datasets by mapping inputs to key-value pairs, shuffling and sorting by key, then reducing to aggregate outputs, with fault tolerance via task restarts and disk materialization, suited for offline computations on immutable data.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> High fault tolerance (materializes state to disk); high latency (slow for iterative jobs).</div>
+                                <div class="use-cases"><span class="label">Use Cases:</span> Search indexing, nightly reports.</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Dataflow Engines (Spark/Flink)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Dataflow engines model computations as directed acyclic graphs with in-memory intermediates, supporting batch and streaming via optimizations like pipelining and lineage-based fault recovery, outperforming MapReduce in speed for complex workflows.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> significantly faster than MapReduce; higher memory cost; recomputes lineage on failure.</div>
+                            </div>
+                        </details>
+
+                    </div>
+                </details>
+
+                <!-- Chapter 11 -->
+                <details class="chapter">
+                    <summary>11. Stream Processing (Chapter 11)</summary>
+                    <div class="chapter-content">
+
+                        <details class="subsection">
+                            <summary>Log-Based Message Brokers (Kafka)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Log-based brokers like Kafka maintain durable, ordered append-only logs for events, enabling decoupled producers and consumers with partition parallelism and replayability, handling high-throughput streams while supporting fault-tolerant processing.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Replayable (time-travel); buffers load spikes; supports decoupling producers/consumers.</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Change Data Capture (CDC)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Change data capture extracts database modifications as a stream of events from write-ahead logs or triggers, facilitating real-time synchronization for downstream systems like caches or search indexes, ensuring derived views remain consistent with sources.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Allows derived data systems (search/cache) to sync with the primary DB reliably.</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Windowing (Tumbling/Sliding)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Windowing segments infinite streams into bounded units for aggregation, addressing unbounded data by grouping events temporally, but requiring careful management of lateness and time semantics to compute accurate results in distributed environments.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Must handle "Event Time" (when it happened) vs "Processing Time" (when it arrived).</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Fixed Windows (Tumbling)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Fixed windows, or tumbling windows, divide streams into non-overlapping time intervals of fixed duration, triggering computations at each window's end, ideal for periodic summaries like hourly metrics, but insensitive to natural data boundaries or sessions.
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Sliding Windows (Hopping/Overlapping Fixed)</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Sliding windows create overlapping fixed-size intervals advanced by a hop step smaller than the window, enabling frequent updates for smooth trends, such as 5-minute windows sliding every minute, but increasing computation due to event duplication across windows.
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Session Windows</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Session windows dynamically group events into sessions based on inactivity gaps, capturing user behaviors like browsing sessions without fixed durations, adapting to variable patterns but complicating parallelism and requiring heuristics for gap thresholds.
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Processing-Time Windowing</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Processing-time windowing assigns events to windows based on arrival time at the system, simplifying implementation with low latency for time-insensitive apps, but vulnerable to skew from delays, ordering issues, or variable ingestion rates causing inaccurate groupings.
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Advanced/Custom Windowing Variations</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Advanced windowing allows custom merging logic for dynamic windows, like combining sessions or hierarchical aggregations, extending standard types for complex scenarios in frameworks like Beam, but adding design complexity for correctness and efficiency.
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Event Time vs. Processing Time</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Event time represents when data was generated, enabling accurate temporal computations resilient to delays, while processing time uses system arrival clocks for simplicity but risks distortions from out-of-order events or variable latencies in streaming pipelines.
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Watermarks</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Watermarks are heuristics estimating stream progress in event time, signaling when no more late data is expected for a window, allowing timely triggers while bounding lateness, but imperfect estimates can lead to premature closures or excessive buffering.
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Triggers</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Triggers determine when to emit window results, such as at watermark passage, periodically, or on data arrival, supporting early/on-time/late firings for speculative outputs, balancing completeness with latency in handling disordered or late-arriving events.
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Accumulation Modes</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Accumulation modes define how results evolve: discarding recomputes fresh, accumulating appends deltas, retracting corrects prior outputs with additions/subtractions, enabling refinements for late data while managing state and downstream compatibility.
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Exactly-Once Processing</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Exactly-once semantics guarantee each input affects outputs precisely once despite failures, using idempotency, checkpoints, and transactional sinks, avoiding duplicates or losses, crucial for financial or analytical accuracy in fault-prone distributed streams.
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Streams and Tables Theory</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Streams represent unbounded changes over time, while tables are point-in-time snapshots of aggregated state; duality views tables as stream materializations and streams as table changelogs, unifying batch/stream processing for consistent derived data systems.
+                            </div>
+                        </details>
+
+                    </div>
+                </details>
+
+                <!-- Chapter 12 -->
+                <details class="chapter">
+                    <summary>12. Architecture Patterns (Chapter 12)</summary>
+                    <div class="chapter-content">
+
+                        <details class="subsection">
+                            <summary>Lambda Architecture</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Lambda architecture combines a batch layer for comprehensive, immutable computations with a speed layer for low-latency approximations on recent data, merging results in a serving layer, but duplicating logic across paradigms increases maintenance burdens.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Operational complexity of maintaining two codebases for the same logic.</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Kappa Architecture</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Kappa architecture unifies processing via streams alone, treating batch as historical stream replays on immutable logs, simplifying codebases and operations while requiring robust stream engines and sufficient storage for long-term event retention.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Conceptually simpler; requires long/infinite log retention.</div>
+                            </div>
+                        </details>
+
+                        <details class="subsection">
+                            <summary>Unbundled Database</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Unbundled databases decompose traditional DBs into specialized components like logs (Kafka), storage (S3), and indexes (Elasticsearch), allowing mix-and-match for custom systems, offering flexibility but demanding expertise in integration and monitoring.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Maximum flexibility; high operational complexity (wiring/maintenance).</div>
+                            </div>
+                        </details>
+
+                    </div>
+                </details>
+
+            </div>
+        </details>
+
+    </div>
+
+    <script>
+        // Optional: Smoothly scroll to the section when opened
+        document.querySelectorAll('details').forEach((detail) => {
+            detail.addEventListener('toggle', (e) => {
+                if (detail.open) {
+                    // Logic for exclusive accordion behavior could go here, 
+                    // but keeping multiple sections open is often better for studying.
+                }
+            });
+        });
+    </script>
+</body>
+</html>

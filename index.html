@@ -373,7 +373,8 @@
                             <summary>Column-Oriented Storage</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Column-oriented storage groups values by column rather than row, enabling high compression ratios through run-length encoding and bitmap indices, accelerating analytical queries on large datasets by reading only relevant columns during scans and aggregations.<br>
-                                <div class="trade-offs"><span class="label">Trade-offs:</span> High compression/fast analytics; terrible for single-row transactional writes.</div>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> High compression/fast analytics; excels at aggregating specific fields (e.g., "Sum Sales"), but joining multiple tables is often slower.</div>
+                                <div class="trade-offs"><span class="label">RUN LENGTH ENCODING:</span> compresses sequential repeats. Instead of storing [Red, Red, Red, Blue, Blue], the database stores (Red, 3), (Blue, 2)</div>
                                 <div class="examples"><span class="label">Examples:</span> Redshift, Snowflake, ClickHouse (Data Warehousing/OLAP).</div>
                             </div>
                         </details>

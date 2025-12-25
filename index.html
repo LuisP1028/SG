@@ -375,6 +375,7 @@
                                 <span class="label">Description:</span> Column-oriented storage groups values by column rather than row, enabling high compression ratios through run-length encoding and bitmap indices, accelerating analytical queries on large datasets by reading only relevant columns during scans and aggregations.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> High compression/fast analytics; excels at aggregating specific fields (e.g., "Sum Sales"), but joining multiple tables is often slower.</div>
                                 <div class="trade-offs"><span class="label">RUN LENGTH ENCODING:</span> compresses sequential repeats. Instead of storing [Red, Red, Red, Blue, Blue], the database stores (Red, 3), (Blue, 2)</div>
+                                <div class="trade-offs"><span class="label">BITMAP ENCODING:</span>VERY SIMILAR TO ONEHOTENCODING. Creates a separate binary vector (a string of 0s and 1s) for every unique value in a column. </div>
                                 <div class="examples"><span class="label">Examples:</span> Redshift, Snowflake, ClickHouse (Data Warehousing/OLAP).</div>
                             </div>
                         </details>
@@ -390,7 +391,7 @@
                         <details class="subsection">
                             <summary>Binary with Schema (Avro/Protobuf/Thrift)</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Schema-based binary formats encode data compactly using predefined schemas for fields and types, supporting forward/backward compatibility through schema evolution rules, ideal for efficient serialization in distributed systems with evolving data structures.<br>
+                                <span class="label">Description:</span> Schema-based binary formats define the layout once upfront. Data payloads then pack only raw values sequentially—no field names, delimiters, or whitespace—minimizing size using the known schema, supporting forward/backward compatibility0 through schema evolution rules, ideal for efficient serialization in distributed systems with evolving data structures.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Efficient size/speed; supports schema evolution; requires schema registry; not human-readable.</div>
                                 <div class="use-cases"><span class="label">Use Cases:</span> Microservices (gRPC), archival of massive datasets.</div>
                             </div>

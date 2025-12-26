@@ -320,7 +320,7 @@
                             <summary>Relational Model (SQL)</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> The relational model structures data in tables with rows and columns, enforcing schemas and supporting declarative SQL queries for joins, filters, and aggregations, providing strong consistency and ACID properties ideal for structured, normalized data with complex relationships.<br>
-                                <div class="trade-offs"><span class="label">Trade-offs:</span> Excellent for joins/integrity; suffers "impedance mismatch" with OOP code; schema changes are heavy.</div>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Excellent for joins/integrity; suffers "impedance mismatch" with OOP code; schema changes are heavy. Ideal for structured, normalized data.</div>
                                 <div class="use-cases"><span class="label">Use Cases:</span> Financial ledgers, personnel records, strictly structured data.</div>
                             </div>
                         </details>
@@ -352,7 +352,7 @@
                     <div class="chapter-content">
 
                         <details class="subsection">
-                            <summary>Log-Structured (LSM-Trees) [IMMUTABLE]</summary>
+                            <summary>Log-Structured (LSM-Trees) [IMMUTABLE] [WRITE THROUGHPUT]</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Log-structured storage engines append writes to an immutable log, using in-memory memtables flushed to sorted SSTables on disk, with background compaction merging files to optimize read performance while handling high write volumes efficiently in big data scenarios.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> High write throughput; slower reads (checks multiple files); compaction causes latency spikes.</div>
@@ -361,7 +361,7 @@
                         </details>
 
                         <details class="subsection">
-                            <summary>Page-Oriented (B-Trees) [MUTABLE]</summary>
+                            <summary>Page-Oriented (B-Trees) [MUTABLE] [EFFICIENT RANGE SCANS] </summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Page-oriented engines like B-trees organize data in fixed-size blocks with balanced tree indices for range queries and updates, performing in-place modifications with write-ahead logging for crash recovery, balancing read/write performance in transactional databases.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Fast, predictable reads; write amplification (changing 1 byte rewrites 4KB).</div>
@@ -400,7 +400,7 @@
                         <details class="subsection">
                             <summary>Textual Formats (JSON/XML)</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Textual formats like JSON and XML provide human-readable, self-describing data interchange with nested structures and optional schemas, facilitating debugging and interoperability across languages, though at the cost of larger payloads and parsing overhead.<br>
+                                <span class="label">Description:</span> Textual formats like JSON and XML provide human-readable, self-describing data interchange with nested structures and optional schemas, facilitating debugging and interoperability across languages, though at the cost of larger payloads and parsing overhead. Dominant standards for data interchange (APIs, microservices, and web requests) because they are human-readable<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Flexible and accessible; verbose (high space usage) and slower parsing.</div>
                             </div>
                         </details>
@@ -427,18 +427,20 @@
                         <details class="subsection">
                             <summary>Single-Leader</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> In single-leader replication, writes are directed to a primary node that sequences operations and propagates changes synchronously or asynchronously to followers, ensuring simplicity in conflict-free updates but introducing failover complexity for high availability.<br>
+                                <span class="label">Description:</span> In single-leader replication, writes hit a single primary node first. This node organizes the operations and copies them to follower nodes. This keeps your data consistent, but it introduces complexity when you need to recover from a primary node failure.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Simple logic; leader is a write bottleneck and single point of failure.</div>
-                                <div class="use-cases"><span class="label">Use Cases:</span> Standard Web Apps, Postgres/MySQL defaults.</div>
+                                <div class="use-cases"><span class="label">Use Cases:</span> Single-leader replication use cases boil down to when sequential processing is absolutely vital [e.g. serialization]</div>
                             </div>
                         </details>
 
                         <details class="subsection">
                             <summary>Multi-Leader</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Multi-leader setups allow writes on multiple nodes, typically across regions, with asynchronous replication handling conflicts via methods like conflict-free replicated data types or custom resolution, enhancing write availability in geographically distributed systems.<br>
+                                <span class="label">Description:</span> In multi-leader setups, you can save data to several servers at the same time, often spread across the world. Because replication happens in the background, you have to handle conflicts using tools like CRDTs [Conflict Free Replicated Data Types] or custom code, but this gives you massive write availability for global systems<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> High availability/partition tolerance; complex conflict resolution (e.g., Last Write Wins).</div>
-                                <div class="use-cases"><span class="label">Use Cases:</span> Collaborative editing, multi-region syncing.</div>
+                                <div class="trade-offs"><span class="label">CDRTs:</span> Operation-based CRDTs: Replicas exchange operations (e.g., "insert char at position 5"). These operations are designed to be commutative when applied, enabling concurrent updates without coordination.
+                                    State-based CRDTs (CvRDTs): Replicas exchange full state, merged via an inflationary, monotonic function (e.g., least upper bound in a join-semilattice). Merges are commutative, associative, and idempotent.</div>
+                                <div class="use-cases"><span class="label">Use Cases:</span> Collaborative editing,  geo-distributed setups, low-latency local writes .</div>
                             </div>
                         </details>
 

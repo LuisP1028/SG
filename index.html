@@ -674,10 +674,12 @@
                     <div class="chapter-content">
 
                         <details class="subsection">
-                            <summary>Log-Based Message Brokers (Kafka)</summary>
+                            <summary>Log-Based Message Brokers (Similar to Event Bus)</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Log-based brokers like Kafka maintain durable, ordered append-only logs for events, enabling decoupled producers and consumers with partition parallelism and replayability, handling high-throughput streams while supporting fault-tolerant processing.<br>
+                                <span class="label">Description:</span> Producers append messages to immutable partitioned logs called topics. Each message gets an offset. Consumers in groups track offsets independently, reading at their pace or replaying history. Partitions are split across several servers (brokers) parallelizing workloads, making everything faster. Replication makes copies of the data on different servers, so if one server crashes, your data stays safe and ready to use.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Replayable (time-travel); buffers load spikes; supports decoupling producers/consumers.</div>
+                                <div class="trade-offs"><span class="label">Topic:</span> </div> A topic is a named stream of messages (e.g., "orders" or "page-views"). Producers append to it, and consumers subscribe to read from it. Topics are split into partitions for scalability.
+                                <div class="trade-offs"><span class="label">Offset:</span> An offset is just a number that points to a specific message in the log, like a page number in a book. Consumers remember the last offset they read to pick up from there next time. </div>
                             </div>
                         </details>
 

@@ -684,7 +684,7 @@
                         </details>
 
                         <details class="subsection">
-                            <summary>Change Data Capture (CDC)</summary>
+                            <summary>Change Data Capture (CDC) (Dashboard Creation)</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Change Data Capture (CDC) reads database changes from the Write-Ahead Log (WAL) or triggers, turning inserts/updates/deletes into a real-time stream of events. This decouples the source DB from multiple consumers (e.g., dashboards, analytics), each processing the same changes independently without overloading the database.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Allows derived data systems (search/cache) to sync with the primary DB reliably.</div>
@@ -693,7 +693,7 @@
                         </details>
 
                         <details class="subsection">
-                            <summary>Windowing (Tumbling/Sliding)</summary>
+                            <summary>Windowing </summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Windowing chops an endless stream of data into manageable time blocks for analysis, handling late arrivals to keep results accurate.<br><br>
                                 
@@ -727,19 +727,38 @@
                         </details>
 
                         <details class="subsection">
-                            <summary>Advanced/Custom Windowing Variations</summary>
+                            <summary>Event Time vs. Processing Time [TIME-DEPENDENT JOINS]</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Advanced windowing allows custom merging logic for dynamic windows, like combining sessions or hierarchical aggregations, extending standard types for complex scenarios in frameworks like Beam, but adding design complexity for correctness and efficiency.
+                                <span class="label">Description:</span> Determining <em>when</em> something happened is crucial for correctness.<br>
+                                
+                                <ul>
+                                    <li><strong>Event Time:</strong> When the event occurred in the real world (e.g., user clicked at 2:00 PM). <br><em>Ensures accuracy even if network lag delivers the event at 2:05 PM.</em></li>
+                                    <li><strong>Processing Time:</strong> When the server received the event. <br><em>Easier to implement, but results skew if the system lags or data is out-of-order.</em></li>
+                                </ul>
+                        
+                                <br>
+                                <span class="label">CONCEPT: Time-Dependent Joins</span><br>
+                                Correlating an event to the <strong>exact state of the world at that specific moment</strong>. It aligns streams by timestamp to analyze reality as it existed <em>then</em>, rather than how it looks <em>now</em>.
+                        
+                                <div class="examples">
+                                    <span class="label">3 STRATEGIES FOR JOINING STREAMS:</span><br><br>
+                        
+                                    <strong>1. Stream-Stream Join (Window Join)</strong><br>
+                                    A general-purpose operation for correlating two unbounded streams.<br>
+                                    <em>Mechanism:</em> Uses time windows or watermarks to "wait" for matching events (e.g., joining a "Search" event with a "Click" event).<br><br>
+                        
+                                    <strong>2. Stream-Table Join (Stream Enrichment)</strong><br>
+                                    Enriches continuous real-time events by matching them against a static (or slowly changing) dataset.<br>
+                                    <em>Example:</em> Attaching "User Details" (Table) to a "Page View" (Stream) ID.<br>
+                                    <em>Constraint:</em> <strong>Requires State.</strong> The processor must buffer/remember events if the table update arrives slightly later than the stream event.<br><br>
+                        
+                                    <strong>3. Table-Table Join</strong><br>
+                                    Merges two changing datasets into a single live view (Materialized View).<br>
+                                    <em>Use Case:</em> Dashboards where complex links between shifting data sources must be instantly visible without constant recalculation.
+                                </div>
                             </div>
                         </details>
-
-                        <details class="subsection">
-                            <summary>Event Time vs. Processing Time</summary>
-                            <div class="subsection-content">
-                                <span class="label">Description:</span> Event time represents when data was generated, enabling accurate temporal computations resilient to delays, while processing time uses system arrival clocks for simplicity but risks distortions from out-of-order events or variable latencies in streaming pipelines.
-                            </div>
-                        </details>
-
+                        
                         <details class="subsection">
                             <summary>Watermarks</summary>
                             <div class="subsection-content">

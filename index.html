@@ -822,38 +822,6 @@
                     </div>
                 </details>
 
-                <!-- Chapter 12 -->
-                <details class="chapter">
-                    <summary>12. Architecture Patterns (Chapter 12)</summary>
-                    <div class="chapter-content">
-
-                        <details class="subsection">
-                            <summary>Lambda Architecture</summary>
-                            <div class="subsection-content">
-                                <span class="label">Description:</span> Lambda architecture combines a batch layer for comprehensive, immutable computations with a speed layer for low-latency approximations on recent data, merging results in a serving layer, but duplicating logic across paradigms increases maintenance burdens.<br>
-                                <div class="trade-offs"><span class="label">Trade-offs:</span> Operational complexity of maintaining two codebases for the same logic.</div>
-                            </div>
-                        </details>
-
-                        <details class="subsection">
-                            <summary>Kappa Architecture</summary>
-                            <div class="subsection-content">
-                                <span class="label">Description:</span> Kappa architecture unifies processing via streams alone, treating batch as historical stream replays on immutable logs, simplifying codebases and operations while requiring robust stream engines and sufficient storage for long-term event retention.<br>
-                                <div class="trade-offs"><span class="label">Trade-offs:</span> Conceptually simpler; requires long/infinite log retention.</div>
-                            </div>
-                        </details>
-
-                        <details class="subsection">
-                            <summary>Unbundled Database</summary>
-                            <div class="subsection-content">
-                                <span class="label">Description:</span> Unbundled databases decompose traditional DBs into specialized components like logs (Kafka), storage (S3), and indexes (Elasticsearch), allowing mix-and-match for custom systems, offering flexibility but demanding expertise in integration and monitoring.<br>
-                                <div class="trade-offs"><span class="label">Trade-offs:</span> Maximum flexibility; high operational complexity (wiring/maintenance).</div>
-                            </div>
-                        </details>
-
-                    </div>
-                </details>
-
             </div>
         </details>
 

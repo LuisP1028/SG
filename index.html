@@ -526,6 +526,8 @@
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Snapshot isolation provides each transaction a consistent view of the database at its start time via multi-version concurrency control, allowing non-blocking reads but potentially leading to write skew anomalies in concurrent updates.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Solves non-repeatable reads; subject to "Write Skew" (logic based on obsolete premises).</div>
+                                <div class="trade-offs"><span class="label">Write-Skew:</span> Two users read the same state but update different records. Each action is valid individually, but together they break a business rule.</div>
+                                <div class="trade-offs"><span class="label">Write-Skew Example:</span> Two users read the same state but update different records. Each action is valid individually, bu</div>
                             </div>
                         </details>
 

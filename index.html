@@ -747,7 +747,7 @@
                                     <strong>1. Stream-Stream Join (Window Join)</strong><br>
                                     A general-purpose operation for correlating two unbounded streams using time windows or watermarks to "wait" for matching events.<br>
                                     
-                                    <!-- INSERTED EXAMPLE -->
+                                    <!-- EXAMPLE 1: INFRASTRUCTURE -->
                                     <div style="margin-top: 8px; margin-bottom: 15px; border: 1px dashed var(--dim-color); padding: 10px; background: rgba(0, 20, 0, 0.5);">
                                         <span class="label">SCENARIO:</span> <strong>INFRASTRUCTURE / SMART BRIDGE</strong><br>
                                         <em>Goal:</em> Detect if a specific heavy truck caused a dangerous structural vibration.<br><br>
@@ -758,15 +758,29 @@
                                         </ul>
                                         
                                         <strong>The Join Logic:</strong><br>
-                                        Using a 5-second window, the system links the "Heavy Load" event to the "High Stress" event based on Location ID ("Segment A").<br>
-                                        <em>Result:</em> Immediate alert confirming <strong>this specific truck</strong> caused the stress, distinct from wind or earthquakes.
+                                        Using a 5-second window, the system links the "Heavy Load" event to the "High Stress" event based on Location ID.<br>
+                                        <em>Result:</em> Immediate alert confirming <strong>this specific truck</strong> caused the stress.
                                     </div>
                         
                                     <!-- STRATEGY 2 -->
                                     <strong>2. Stream-Table Join (Stream Enrichment)</strong><br>
                                     Enriches continuous real-time events by matching them against a static (or slowly changing) dataset.<br>
-                                    <em>Example:</em> Attaching "User Details" (Table) to a "Page View" (Stream) ID.<br>
-                                    <em>Constraint:</em> <strong>Requires State.</strong> The processor must buffer/remember events if the table update arrives slightly later than the stream event.<br><br>
+                                    <em>Constraint:</em> <strong>Requires State.</strong> The processor must buffer/remember events if the table update arrives slightly later than the stream event.<br>
+                        
+                                    <!-- EXAMPLE 2: DEFENSE -->
+                                    <div style="margin-top: 8px; margin-bottom: 15px; border: 1px dashed var(--dim-color); padding: 10px; background: rgba(0, 20, 0, 0.5);">
+                                        <span class="label">SCENARIO:</span> <strong>DEFENSE / AIRSPACE SURVEILLANCE</strong><br>
+                                        <em>Goal:</em> Identify if a detected airborne object is hostile.<br><br>
+                                        
+                                        <ul style="margin-top: 5px;">
+                                            <li><strong>Stream (Radar):</strong> Radar reports unidentified track entering restricted airspace at <span style="color: #fff;">15:30:00</span>, speed 800 km/h.</li>
+                                            <li><strong>Table (Registry):</strong> Static/slowly-changing table of friendly aircraft IDs, transponders, and flight plans.</li>
+                                        </ul>
+                                        
+                                        <strong>The Join Logic:</strong><br>
+                                        The system enriches the radar detection by looking up the track's ID in the registry table. <strong>No match = Flagged.</strong><br>
+                                        <em>Result:</em> Immediate alert for possible enemy intrusion, distinct from friendly flights.
+                                    </div>
                         
                                     <!-- STRATEGY 3 -->
                                     <strong>3. Table-Table Join</strong><br>

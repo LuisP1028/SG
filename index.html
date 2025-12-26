@@ -536,6 +536,15 @@
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Serializable isolation ensures transactions execute as if sequentially, using two-phase locking or serializable snapshot isolation to detect conflicts, providing the highest integrity but at the expense of reduced concurrency and potential deadlocks.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Perfect integrity; performance penalty via 2PL (locking) or SSI (abort rates).</div>
+                                <div class="trade-offs"><span class="label">Example: Applied AI: Model Registry Governance
+
+                                    The Scenario: You have a strict governance policy: "A production AI model can only be deployed if it has passed safety checks, and only one model can be marked as 'Production' at a time to prevent version conflicts."
+                                    
+                                    The Race Condition (Without Serializable): Engineer A promotes Model v1.1 to "Production." At the same exact moment, Engineer B promotes Model v1.2. Both transactions check the database, see that the "Production" slot is currently empty (or holds v1.0), and both successfully write their status. You now have two models marked as "Production," breaking your governance tool.
+                                    
+                                    With Serializable Isolation: The database detects that both transactions read the same "current state" and tried to modify it. It forces the operations to happen serially. The first one wins; the second one fails immediately because the state it relied upon (Production slot is empty) is no longer true.
+                                    
+                                     </span> </div>
                             </div>
                         </details>
 

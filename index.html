@@ -490,6 +490,8 @@
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Key range partitioning divides data into contiguous key segments assigned to shards, supporting efficient range scans and ordered access but prone to imbalances if keys are not uniformly distributed, requiring dynamic rebalancing to mitigate hotspots.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Efficient range queries; high risk of "hotspots" if keys are sequential (e.g., timestamps).</div>
+                                <div class="trade-offs"><span class="label">Example:</span> Key-Range: Retrieving orders by date. Since keys are sorted, the DB reads one continuous chunk rather than hunting across every server for the data.
+                                </div>
                             </div>
                         </details>
 
@@ -498,6 +500,7 @@
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Hash partitioning applies a hash function to keys for even distribution across shards, promoting load balance and scalability but sacrificing key order, making range queries inefficient as they require scattering across all partitions.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Uniform data distribution (load balance); destroys ordering (no range scans).</div>
+                                <div class="trade-offs"><span class="label">Example:</span> Hash: Ingesting logs from millions of sensors. Hashing the ID spreads traffic perfectly across all nodes, preventing one server from getting overloaded.</div>
                             </div>
                         </details>
 

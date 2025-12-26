@@ -515,7 +515,8 @@
                         <details class="subsection">
                             <summary>Read Committed</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Read committed isolation prevents dirty reads and writes by ensuring transactions only see committed data, using row locks for writers but allowing non-repeatable reads where data changes between reads within the same transaction.<br>
+                                <span class="label">Description:</span> 
+                                Ensures you only see officially saved data, preventing "dirty reads." However, values can still change between queries within your transaction if someone else commits an update.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Default in many DBs; subject to "lost updates" and "non-repeatable reads."</div>
                             </div>
                         </details>

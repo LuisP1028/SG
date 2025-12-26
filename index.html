@@ -557,9 +557,9 @@
                     <div class="chapter-content">
 
                         <details class="subsection">
-                            <summary>Linearizability (Strong Consistency)</summary>
+                            <summary>Linearizability (Strong Consistency) [RECENCY GUARANTEE]</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Linearizability makes a distributed system appear as a single coherent copy with atomic operations visible immediately, satisfying strict consistency but incurring latency from synchronization, often conflicting with availability under network partitions per CAP.<br>
+                                <span class="label">Description:</span> Linearizability makes a distributed system appear as a single coherent copy with atomic operations visible immediately, satisfying strict consistency but incurring latency from synchronization. In other words, as soon as one client successfully completes a write, all clients reading from the database must be able to see the value just written.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Network delays kill performance; system halts during partitions (CAP Theorem).</div>
                             </div>
                         </details>
@@ -567,23 +567,26 @@
                         <details class="subsection">
                             <summary>Logical Clocks (Lamport/Vector)</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Logical clocks like Lamport timestamps or vector clocks track causal dependencies between events without relying on synchronized physical clocks, enabling detection of happens-before relationships in distributed systems for ordering and conflict resolution.<br>
+                                <span class="label">Description:</span> 
+                                Logical clocks use counters, not wall clocks, to track the sequence of events. They capture cause-and-effect relationships, allowing systems to correctly order updates and spot conflicts without needing perfectly synchronized time.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Orders events accurately without relying on unreliable physical (NTP) clocks.</div>
+                                <div class="trade-offs"><span class="label">How Logical Clocks Track Event Order:</span> Compare counters: the event with the higher number is the most recent one.
+                                </div>
                             </div>
                         </details>
 
                         <details class="subsection">
                             <summary>Consensus Algorithms (Paxos/Raft)</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Consensus algorithms such as Paxos or Raft enable nodes to agree on values despite failures, using quorums for leader election and log replication, crucial for maintaining consistent state in distributed databases and coordination services like ZooKeeper.<br>
-                                <div class="trade-offs"><span class="label">Trade-offs:</span> Essential for leader election/atomic broadcast; slow/blocking if quorum is lost.</div>
+                                <span class="label">Description:</span> Consensus algorithms let servers agree on data despite failures. They use a majority vote to elect a leader who coordinates writes. Once more than half the nodes confirm an update, it becomes the "truth," ensuring the system stays consistent.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Essential for leader election/atomic broadcast/consistent states; slow/blocking if quorum is lost.</div>
                             </div>
                         </details>
 
                         <details class="subsection">
                             <summary>Two-Phase Commit (2PC)</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Two-phase commit coordinates atomic transactions across participants with a prepare phase for voting and a commit phase for execution, ensuring all-or-nothing outcomes but vulnerable to blocking if the coordinator fails during the process.<br>
+                                <span class="label">Description:</span> Two-phase commit coordinates atomic transactions across participants.Nodes vote on the transaction in a 'prepare' phase. If unanimous, the coordinator executes it. If the coordinator fails, nodes remain blocked holding locks, waiting for the final decision.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Blocks if coordinator fails; poor fault tolerance compared to consensus.</div>
                             </div>
                         </details>

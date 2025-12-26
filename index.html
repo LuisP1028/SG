@@ -686,19 +686,46 @@
                         <details class="subsection">
                             <summary>Change Data Capture (CDC)</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Change data capture extracts database modifications as a stream of events from write-ahead logs or triggers, facilitating real-time synchronization for downstream systems like caches or search indexes, ensuring derived views remain consistent with sources.<br>
+                                <span class="label">Description:</span> Change Data Capture (CDC) reads database changes from the Write-Ahead Log (WAL) or triggers, turning inserts/updates/deletes into a real-time stream of events. This decouples the source DB from multiple consumers (e.g., dashboards, analytics), each processing the same changes independently without overloading the database.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Allows derived data systems (search/cache) to sync with the primary DB reliably.</div>
+                                <div class="trade-offs"><span class="label">Trigger:</span> A database trigger is a rule that automatically runs custom code when a table change (insert, update, delete) occurs, allowing CDC to capture and stream those events.</div>
                             </div>
                         </details>
 
                         <details class="subsection">
                             <summary>Windowing (Tumbling/Sliding)</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Windowing segments infinite streams into bounded units for aggregation, addressing unbounded data by grouping events temporally, but requiring careful management of lateness and time semantics to compute accurate results in distributed environments.<br>
+                                <span class="label">Description:</span> Windowing chops an endless stream of data into manageable time blocks for analysis, handling late arrivals to keep results accurate.<br><br>
+                                
+                                <strong>4 Practical Ways to Slice Time:</strong>
+                                <ul>
+                                    <li>
+                                        <strong>[ Tumbling Window ]</strong><br>
+                                        Distinct, non-overlapping segments.<br>
+                                        <em>Example: 1-minute financial candlestick charts.</em>
+                                    </li>
+                                    <br>
+                                    <li>
+                                        <strong>[ Hopping Window ]</strong><br>
+                                        Fixed windows that overlap and update periodically.<br>
+                                        <em>Example: Calculating a 30-second average every 5 seconds.</em>
+                                    </li>
+                                    <br>
+                                    <li>
+                                        <strong>[ Sliding Window ]</strong><br>
+                                        A continuous "rolling" view that moves with the data and has no fixed boundaries.
+                                    </li>
+                                    <br>
+                                    <li>
+                                        <strong>[ Session Window ]</strong><br>
+                                        Dynamic windows based on behavior. Groups a user's burst of activity and closes only after a specific period of inactivity.
+                                    </li>
+                                </ul>
+                        
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Must handle "Event Time" (when it happened) vs "Processing Time" (when it arrived).</div>
                             </div>
                         </details>
-
+                        
                         <details class="subsection">
                             <summary>Fixed Windows (Tumbling)</summary>
                             <div class="subsection-content">

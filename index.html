@@ -725,34 +725,6 @@
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Must handle "Event Time" (when it happened) vs "Processing Time" (when it arrived).</div>
                             </div>
                         </details>
-                        
-                        <details class="subsection">
-                            <summary>Fixed Windows (Tumbling)</summary>
-                            <div class="subsection-content">
-                                <span class="label">Description:</span> Fixed windows, or tumbling windows, divide streams into non-overlapping time intervals of fixed duration, triggering computations at each window's end, ideal for periodic summaries like hourly metrics, but insensitive to natural data boundaries or sessions.
-                            </div>
-                        </details>
-
-                        <details class="subsection">
-                            <summary>Sliding Windows (Hopping/Overlapping Fixed)</summary>
-                            <div class="subsection-content">
-                                <span class="label">Description:</span> Sliding windows create overlapping fixed-size intervals advanced by a hop step smaller than the window, enabling frequent updates for smooth trends, such as 5-minute windows sliding every minute, but increasing computation due to event duplication across windows.
-                            </div>
-                        </details>
-
-                        <details class="subsection">
-                            <summary>Session Windows</summary>
-                            <div class="subsection-content">
-                                <span class="label">Description:</span> Session windows dynamically group events into sessions based on inactivity gaps, capturing user behaviors like browsing sessions without fixed durations, adapting to variable patterns but complicating parallelism and requiring heuristics for gap thresholds.
-                            </div>
-                        </details>
-
-                        <details class="subsection">
-                            <summary>Processing-Time Windowing</summary>
-                            <div class="subsection-content">
-                                <span class="label">Description:</span> Processing-time windowing assigns events to windows based on arrival time at the system, simplifying implementation with low latency for time-insensitive apps, but vulnerable to skew from delays, ordering issues, or variable ingestion rates causing inaccurate groupings.
-                            </div>
-                        </details>
 
                         <details class="subsection">
                             <summary>Advanced/Custom Windowing Variations</summary>

@@ -791,37 +791,31 @@
                         </details>
 
                         <details class="subsection">
-                            <summary>Watermarks</summary>
+                            <summary>Stream Fault Tolerance</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Watermarks are heuristics estimating stream progress in event time, signaling when no more late data is expected for a window, allowing timely triggers while bounding lateness, but imperfect estimates can lead to premature closures or excessive buffering.
+                                <span class="label">Description:</span> Strategies to ensure data integrity and state recovery when stream processors fail.<br><br>
+                        
+                                <ul>
+                                    <li>
+                                        <strong>[ Rolling Checkpoints ]</strong><br>
+                                        Periodically takes a 'snapshot' of the global state to durable storage.<br>
+                                        <em>Function:</em> Allows the system to crash and restart from the last known good state rather than recomputing from the beginning.
+                                    </li>
+                                    <br>
+                                    <li>
+                                        <strong>[ Microbatching ]</strong><br>
+                                        Breaks the continuous stream into small, discrete blocks and treats each block like a miniature batch process.<br>
+                                        <em>Impact:</em> Naturally creates fixed-size windows (equal to batch size). For larger windows, state must be explicitly carried over between microbatches.
+                                    </li>
+                                </ul>
                             </div>
                         </details>
 
-                        <details class="subsection">
-                            <summary>Triggers</summary>
-                            <div class="subsection-content">
-                                <span class="label">Description:</span> Triggers determine when to emit window results, such as at watermark passage, periodically, or on data arrival, supporting early/on-time/late firings for speculative outputs, balancing completeness with latency in handling disordered or late-arriving events.
-                            </div>
-                        </details>
-
-                        <details class="subsection">
-                            <summary>Accumulation Modes</summary>
-                            <div class="subsection-content">
-                                <span class="label">Description:</span> Accumulation modes define how results evolve: discarding recomputes fresh, accumulating appends deltas, retracting corrects prior outputs with additions/subtractions, enabling refinements for late data while managing state and downstream compatibility.
-                            </div>
-                        </details>
 
                         <details class="subsection">
                             <summary>Exactly-Once Processing</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Exactly-once semantics guarantee each input affects outputs precisely once despite failures, using idempotency, checkpoints, and transactional sinks, avoiding duplicates or losses, crucial for financial or analytical accuracy in fault-prone distributed streams.
-                            </div>
-                        </details>
-
-                        <details class="subsection">
-                            <summary>Streams and Tables Theory</summary>
-                            <div class="subsection-content">
-                                <span class="label">Description:</span> Streams represent unbounded changes over time, while tables are point-in-time snapshots of aggregated state; duality views tables as stream materializations and streams as table changelogs, unifying batch/stream processing for consistent derived data systems.
                             </div>
                         </details>
 

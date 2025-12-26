@@ -609,6 +609,53 @@
                 <details class="chapter">
                     <summary>10. Batch Processing (Chapter 10)</summary>
                     <div class="chapter-content">
+                        
+                        <details class="subsection">
+                            <summary>BATCH JOBS</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> Offline Build, Online Load<br>
+                                <div class="trade-offs"><span class="label">Example:</span> The Goal: Update a "Threat Intelligence" database that a web app queries.
+
+                                    Step 1: The Calculation (Standard Batch Stuff)
+                                    
+                                    Your Hadoop/Spark cluster crunches the numbers. It processes terabytes of drone footage and signals. It identifies 1 million bad guys.
+                                    
+                                    At this point, the data is just in the memory of the batch processors.
+                                    
+                                    Step 2: The Formatting (The "Writing the Database" Step)
+                                    
+                                    This is where the magic happens.
+                                    
+                                    Instead of the Batch Job saying, "Okay, I found a bad guy, let me send a network request to the database server to save it," it does something else.
+                                    
+                                    The Batch Job asks: "What software is the database using? RocksDB? HBase?" It then formats the data into the exact binary file format that RocksDB uses on its hard drive.
+                                    
+                                    It sorts the keys.
+                                    
+                                    It compresses the data.
+                                    
+                                    It builds the index.
+                                    
+                                    It saves this as a file (e.g., threats_2025_01.sst) on the distributed file system (S3/HDFS).
+                                    
+                                    Note: The live database server is completely unaware this is happening. It is still happily serving old data.
+                                    
+                                    Step 3: The Transfer
+                                    
+                                    The system copies this threats_2025_01.sst file from the batch storage to the live database server's local disk.
+                                    
+                                    Step 4: The Ingestion
+                                    
+                                    You send a tiny command to the Database Server: "Hey, look in folder X. I put a new file there." The Database Server sees the file. Since the file is already sorted, indexed, and formatted perfectly, the server doesn't have to process it. It just "mounts" it.
+                                    
+                                    Time taken: Milliseconds.
+                                    
+                                    CPU Load: Near zero.
+                                    
+                                    </div>
+                                <div class="use-cases"><span class="label">Use Cases:</span> Search indexing, nightly reports.</div>
+                            </div>
+                        </details>
 
                         <details class="subsection">
                             <summary>MapReduce</summary>
@@ -620,9 +667,9 @@
                         </details>
 
                         <details class="subsection">
-                            <summary>Dataflow Engines (Spark/Flink)</summary>
+                            <summary>Dataflow Engines (Task Fusion/ Data Locality)</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Dataflow engines model computations as directed acyclic graphs with in-memory intermediates, supporting batch and streaming via optimizations like pipelining and lineage-based fault recovery, outperforming MapReduce in speed for complex workflows.<br>
+                                <span class="label">Description:</span> Dataflow engines analyze the DAG [Directed Acyclic Graph] to spot "narrow" dependencies—steps where data doesn't need to move between nodes. The engine fuses these steps into a single physical task. This preserves data locality, processing everything on one machine without expensive network shuffles or disk writes. By chaining operations in memory, the engine executes pipelines as one efficient stream rather than separate, slower steps.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> significantly faster than MapReduce; higher memory cost; recomputes lineage on failure.</div>
                             </div>
                         </details>

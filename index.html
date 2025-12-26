@@ -611,49 +611,40 @@
                     <div class="chapter-content">
                         
                         <details class="subsection">
-                            <summary>BATCH JOBS</summary>
+                            <summary>Batch Output: Offline Build, Online Load</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Offline Build, Online Load<br>
-                                <div class="trade-offs"><span class="label">Example:</span> The Goal: Update a "Threat Intelligence" database that a web app queries.
-
-                                    Step 1: The Calculation (Standard Batch Stuff)
-                                    
-                                    Your Hadoop/Spark cluster crunches the numbers. It processes terabytes of drone footage and signals. It identifies 1 million bad guys.
-                                    
-                                    At this point, the data is just in the memory of the batch processors.
-                                    
-                                    Step 2: The Formatting (The "Writing the Database" Step)
-                                    
-                                    This is where the magic happens.
-                                    
-                                    Instead of the Batch Job saying, "Okay, I found a bad guy, let me send a network request to the database server to save it," it does something else.
-                                    
-                                    The Batch Job asks: "What software is the database using? RocksDB? HBase?" It then formats the data into the exact binary file format that RocksDB uses on its hard drive.
-                                    
-                                    It sorts the keys.
-                                    
-                                    It compresses the data.
-                                    
-                                    It builds the index.
-                                    
-                                    It saves this as a file (e.g., threats_2025_01.sst) on the distributed file system (S3/HDFS).
-                                    
-                                    Note: The live database server is completely unaware this is happening. It is still happily serving old data.
-                                    
-                                    Step 3: The Transfer
-                                    
-                                    The system copies this threats_2025_01.sst file from the batch storage to the live database server's local disk.
-                                    
-                                    Step 4: The Ingestion
-                                    
-                                    You send a tiny command to the Database Server: "Hey, look in folder X. I put a new file there." The Database Server sees the file. Since the file is already sorted, indexed, and formatted perfectly, the server doesn't have to process it. It just "mounts" it.
-                                    
-                                    Time taken: Milliseconds.
-                                    
-                                    CPU Load: Near zero.
-                                    
-                                    </div>
-                                <div class="use-cases"><span class="label">Use Cases:</span> Search indexing, nightly reports.</div>
+                                <span class="label">Description:</span> A highly efficient pattern where batch jobs generate pre-formatted database files (like SSTables) to be bulk-loaded, avoiding the overhead of individual network write requests.<br>
+                                
+                                <div class="examples">
+                                    <span class="label">EXAMPLE SCENARIO:</span> <strong>Updating a "Threat Intelligence" Database</strong><br><br>
+                        
+                                    <!-- Step 1 -->
+                                    <strong>[ STEP 1 ] The Calculation</strong><br>
+                                    Your Hadoop/Spark cluster crunches the numbers (terabytes of drone footage/signals). It identifies 1 million bad guys. <br>
+                                    <em>Status: Data is currently in batch processor memory.</em><br><br>
+                        
+                                    <!-- Step 2 -->
+                                    <strong>[ STEP 2 ] The Formatting (The Magic)</strong><br>
+                                    Instead of sending 1 million network requests to the DB, the Batch Job acts as a database engine:<br>
+                                    <ul>
+                                        <li>It asks: "What format does the DB use?" (e.g., RocksDB).</li>
+                                        <li>It <strong>sorts</strong> the keys and <strong>compresses</strong> the data.</li>
+                                        <li>It builds the <strong>index</strong>.</li>
+                                        <li>It saves a binary file (e.g., <code>threats_2025_01.sst</code>) to the Distributed File System (S3/HDFS).</li>
+                                    </ul>
+                                    <em>Note: The live database is completely unaware. Zero load impact.</em><br><br>
+                        
+                                    <!-- Step 3 -->
+                                    <strong>[ STEP 3 ] The Transfer</strong><br>
+                                    The system copies the <code>.sst</code> file from batch storage to the live database server's local disk.<br><br>
+                        
+                                    <!-- Step 4 -->
+                                    <strong>[ STEP 4 ] The Ingestion</strong><br>
+                                    You send a tiny command to the DB Server: <em>"Check folder X, I put a file there."</em><br>
+                                    Since the file is already sorted and indexed, the server simply "mounts" it.<br>
+                                    <br>
+                                    <span style="border: 1px solid var(--text-color); padding: 2px 5px;">RESULT:</span> Time: <strong>Milliseconds</strong> // CPU Load: <strong>Near Zero</strong>
+                                </div>
                             </div>
                         </details>
 

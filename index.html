@@ -445,7 +445,7 @@
                         </details>
 
                         <details class="subsection">
-                            <summary>Leaderless (Dynamo-style)</summary>
+                            <summary>Leaderless (AVAILABILITY > CONSISTENCY) [GREAT FOR SPOTTY ENVIRONMENTS]</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Leaderless replication distributes writes and reads across nodes using quorums (W + R > N) for consistency, employing hinted handoffs and anti-entropy for repair, prioritizing availability over strict ordering in highly fault-tolerant, partition-resilient environments.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Max availability; hard to ensure linearizability; risk of stale reads (requires read repair).</div>

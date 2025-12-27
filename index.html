@@ -577,7 +577,7 @@
                     <div class="chapter-content">
 
                         <details class="subsection">
-                            <summary>Linearizability (Strong Consistency) [RECENCY GUARANTEE]</summary>
+                            <summary>Linearizability [RECENCY GUARANTEE]</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Linearizability makes a distributed system appear as a single coherent copy with atomic operations visible immediately, satisfying strict consistency but incurring latency from synchronization. In other words, as soon as one client successfully completes a write, all clients reading from the database must be able to see the value just written.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Network delays kill performance; system halts during partitions (CAP Theorem).</div>
@@ -598,8 +598,19 @@
                         <details class="subsection">
                             <summary>Consensus Algorithms (ATOMIC BROADCAST/LEADER ELECTION)</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Consensus algorithms let servers agree on data despite failures. They use a majority vote to elect a leader who coordinates writes. Once more than half the nodes confirm an update, it becomes the "truth," ensuring the system stays consistent.<br>
-                                <div class="trade-offs"><span class="label">Trade-offs:</span> Essential for leader election/atomic broadcast/consistent states; slow/blocking if quorum is lost.</div>
+                                <span class="label">Description:</span> Consensus algorithms let servers agree on data despite failures. They use a majority vote to elect a leader who coordinates writes. Once more than half the nodes confirm an update, it becomes the "truth."<br><br>
+                        
+                                <div style="background: rgba(0,20,0,0.5); padding: 10px; border: 1px dashed var(--dim-color); margin-bottom: 10px;">
+                                    <span class="label">CONCEPT: ATOMIC BROADCAST</span><br>
+                                    A core primitive of consensus systems (like Zookeeper/Etcd).<br><br>
+                                    <strong>The Guarantee:</strong><br>
+                                    All computers in the network must receive the <em>same set</em> of messages in the <em>exact same order</em>.<br><br>
+                                    
+                                    <strong>The Rule:</strong><br>
+                                    If one correct node accepts a message, <strong>every other node must also accept it</strong>. This strict sequencing ensures the entire system stays perfectly synchronized.
+                                </div>
+                        
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Essential for leader election & consistent state; slow/blocking if quorum is lost.</div>
                             </div>
                         </details>
 

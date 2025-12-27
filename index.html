@@ -530,24 +530,44 @@
                                 <div class="trade-offs"><span class="label">Write-Skew Example:</span> Two users read the same state but update different records. Each action is valid individually, bu</div>
                             </div>
                         </details>
-
                         <details class="subsection">
                             <summary>Serializable</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Serializable isolation ensures transactions execute as if sequentially, using two-phase locking or serializable snapshot isolation to detect conflicts, providing the highest integrity but at the expense of reduced concurrency and potential deadlocks.<br>
-                                <div class="trade-offs"><span class="label">Trade-offs:</span> Perfect integrity; performance penalty via 2PL (locking) or SSI (abort rates).</div>
-                                <div class="trade-offs"><span class="label">Example: Applied AI: Model Registry Governance
-
-                                    The Scenario: You have a strict governance policy: "A production AI model can only be deployed if it has passed safety checks, and only one model can be marked as 'Production' at a time to prevent version conflicts."
+                                <span class="label">Description:</span> Serializable isolation ensures transactions execute as if sequentially, providing the highest integrity by detecting and preventing concurrent conflicts.<br><br>
+                        
+                                <!-- 2PL DEFINITION -->
+                                <div style="background: rgba(0,20,0,0.5); padding: 10px; border: 1px dashed var(--dim-color); margin-bottom: 10px;">
+                                    <span class="label">MECHANISM: Two-Phase Locking (2PL)</span><br>
+                                    A standard method to enforce serializability. The transaction acquires locks "as needed" based on the SQL statements it executes.<br><br>
                                     
-                                    The Race Condition (Without Serializable): Engineer A promotes Model v1.1 to "Production." At the same exact moment, Engineer B promotes Model v1.2. Both transactions check the database, see that the "Production" slot is currently empty (or holds v1.0), and both successfully write their status. You now have two models marked as "Production," breaking your governance tool.
+                                    <strong>1. The Growing Phase (Acquire)</strong><br>
+                                    Locks are acquired one by one as the transaction progresses.
+                                    <ul>
+                                        <li><strong>Read Operation:</strong> Requests a <span style="color: #fff;">Shared (S) Lock</span>.</li>
+                                        <li><strong>Write Operation:</strong> Requests an <span style="color: #fff;">Exclusive (X) Lock</span>.</li>
+                                    </ul>
                                     
-                                    With Serializable Isolation: The database detects that both transactions read the same "current state" and tried to modify it. It forces the operations to happen serially. The first one wins; the second one fails immediately because the state it relied upon (Production slot is empty) is no longer true.
-                                    
-                                     </span> </div>
+                                    <strong>2. The Shrinking Phase (Release)</strong><br>
+                                    Locks are released when the transaction commits or aborts.<br>
+                                    <em>Crucial Rule:</em> No <strong>new</strong> locks can be acquired once the transaction begins releasing them.
+                                </div>
+                        
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Perfect integrity; performance penalty due to locking overhead (2PL) or high abort rates (Serializable Snapshot Isolation).</div>
+                                
+                                <div class="examples">
+                                    <span class="label">EXAMPLE:</span> <strong>Applied AI: Model Registry Governance</strong><br><br>
+                        
+                                    <strong>The Scenario:</strong><br>
+                                    Strict governance: "A production AI model can only be deployed if it has passed safety checks, and <em>only one model can be marked as 'Production' at a time</em>."<br><br>
+                        
+                                    <strong>The Race Condition (Without Serializable):</strong><br>
+                                    Engineer A promotes v1.1. Engineer B promotes v1.2. Both check the DB, see "Production" is empty, and both write. Result: <em>Two models marked as "Production," breaking governance.</em><br><br>
+                        
+                                    <strong>With Serializable Isolation:</strong><br>
+                                    The database detects the conflict (both read the same state, then tried to modify it). It forces serialization: The first wins; the second fails immediately because the state it relied upon is no longer valid.
+                                </div>
                             </div>
                         </details>
-
                     </div>
                 </details>
 

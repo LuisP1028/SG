@@ -591,7 +591,7 @@
                         </details>
 
                         <details class="subsection">
-                            <summary>Logical Clocks (Capture Cause-Effect Relationships [CAUSALITY])</summary>
+                            <summary>Logical Clocks [CAUSALITY]</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> 
                                 Logical clocks use counters, not wall clocks, to track the sequence of events. They capture cause-and-effect relationships, allowing systems to correctly order updates and spot conflicts without needing perfectly synchronized time.<br>
@@ -600,7 +600,18 @@
                                 </div>
                             </div>
                         </details>
-
+                       
+                        <details class="subsection">
+                            <summary>Clock Uncertainty & TrueTime [CONSISTENCY]</summary>
+                            <div class="subsection-content">
+                                <span class="label">Description:</span> 
+                                Treats wall clock readings as a confidence interval (earliest/latest) rather than a specific point in time. To ensure that causality is preserved across nodes, the system deliberately waits out the uncertainty window before committing a write.<br>
+                                <div class="trade-offs"><span class="label">Trade-offs:</span> Achieves global linearizability using physical clocks, but writes incur a latency penalty (waiting out the error margin) to ensure correctness.</div>
+                                <div class="trade-offs"><span class="label">How TrueTime Ensures Order:</span> Deliberate wait: By pausing until the uncertainty interval passes, it ensures the write's timestamp is strictly lower than any future read's timestamp, preventing overlap.
+                                </div>
+                            </div>
+                        </details>
+                       
                         <details class="subsection">
                             <summary>Consensus Algorithms (ATOMIC BROADCAST/LEADER ELECTION)</summary>
                             <div class="subsection-content">

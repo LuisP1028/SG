@@ -285,7 +285,7 @@
                     <div class="chapter-content">
                         
                         <details class="subsection">
-                            <summary>Reliability</summary>
+                            <summary>Reliability [Replication, Fault Tolerence, Recovery Mechanisms]</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Reliability ensures the system functions as expected despite hardware failures, software bugs, or human errors, using techniques like fault tolerance, replication, and recovery mechanisms to prevent catastrophic failures and maintain service availability. This foundational quality prioritizes correctness over time, often tested through deliberate fault injection.<br>
                                 <div class="trade-offs"><span class="label">Context:</span> Redundancy increases cost/complexity. Chaos Engineering (e.g., Netflix Chaos Monkey) tests this.</div>
@@ -293,7 +293,7 @@
                         </details>
 
                         <details class="subsection">
-                            <summary>Scalability</summary>
+                            <summary>Scalability [Load Balancing, Partitioning]</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Scalability describes a system's capacity to handle growing load by measuring response time percentiles and throughput, employing strategies like load balancing and partitioning to sustain performance without degradation as user demands or data volumes increase exponentially.<br>
                                 <div class="trade-offs"><span class="label">Context:</span> Horizontal scaling (shared-nothing) adds network complexity vs. Vertical scaling (hardware limits).</div>
@@ -301,7 +301,7 @@
                         </details>
 
                         <details class="subsection">
-                            <summary>Maintainability</summary>
+                            <summary>Maintainability [Operability, Modularity, Evolvability]</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Maintainability focuses on making systems operable, simple, and evolvable, incorporating operability for smooth operations, simplicity to reduce accidental complexity, and evolvability for easy adaptations, ensuring long-term viability through modular design and documentation.<br>
                                 <div class="trade-offs"><span class="label">Context:</span> Abstractions hide complexity but can leak; requires good observability and automation.</div>
@@ -337,7 +337,7 @@
                         <details class="subsection">
                             <summary>Graph Model (Property Graph)</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Graph models represent data as vertices and edges with properties, enabling efficient traversal queries via languages like Cypher, suited for interconnected data where relationships are first-class, supporting deep queries without costly joins in relational systems.<br>
+                                <span class="label">Description:</span> Graph models represent data as vertices and edges with properties, enabling efficient traversal queries, This is useful because it allows you to instantly uncover distant or hidden relationships. <br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Unbeatable for complex many-to-many logic; difficult to shard across multiple nodes.</div>
                                 <div class="use-cases"><span class="label">Use Cases:</span> Social networks, fraud detection networks, knowledge graphs.</div>
                             </div>
@@ -389,7 +389,7 @@
                     <div class="chapter-content">
 
                         <details class="subsection">
-                            <summary>Binary with Schema (Avro/Protobuf/Thrift)</summary>
+                            <summary>Binary with Schema (EVOLVABILITY, SPEED)</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Schema-based binary formats define the layout once upfront. Data payloads then pack only raw values sequentially—no field names, delimiters, or whitespace—minimizing size using the known schema, supporting forward/backward compatibility0 through schema evolution rules, ideal for efficient serialization in distributed systems with evolving data structures.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Efficient size/speed; supports schema evolution; requires schema registry; not human-readable.</div>
@@ -527,7 +527,13 @@
                                 <span class="label">Description:</span> Snapshot isolation "freezes" the state when you start. It achieves this by storing multiple versions of every row (MVCC) instead of overwriting. Writers create new versions, while you read the old version that matches your start time.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Solves non-repeatable reads; subject to "Write Skew" (logic based on obsolete premises).</div>
                                 <div class="trade-offs"><span class="label">Write-Skew:</span> Two users read the same state but update different records. Each action is valid individually, but together they break a business rule.</div>
-                                <div class="trade-offs"><span class="label">Write-Skew Example:</span> Two users read the same state but update different records. Each action is valid individually, bu</div>
+                                <div class="trade-offs">
+                                    <span class="label">Write-Skew Example:</span> <strong>Autonomous Drone Grid</strong><br>
+                                    <em>Constraint:</em> At least one drone must remain active.<br>
+                                    &bull; <strong>Tx A:</strong> Drone Alpha sees Bravo is active, so Alpha goes offline.<br>
+                                    &bull; <strong>Tx B:</strong> Simultaneously, Drone Bravo sees Alpha is active, so Bravo goes offline.<br>
+                                    &bull; <strong>Result:</strong> Both commit (updating disjoint records), leaving the sector unmonitored.
+                                </div>
                             </div>
                         </details>
                         <details class="subsection">

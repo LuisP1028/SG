@@ -706,7 +706,7 @@
                         </details>
 
                         <details class="subsection">
-                            <summary>Dataflow Engines (Task Fusion/ Data Locality)</summary>
+                            <summary>Dataflow Engines (Facilitate Task Fusion thrugh narrow dependency identification/ Preserve Data Locality)</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Dataflow engines analyze the DAG [Directed Acyclic Graph] to spot "narrow" dependencies—steps where data doesn't need to move between nodes. The engine fuses these steps into a single physical task. This preserves data locality, processing everything on one machine without expensive network shuffles or disk writes. By chaining operations in memory, the engine executes pipelines as one efficient stream rather than separate, slower steps.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> significantly faster than MapReduce; higher memory cost; recomputes lineage on failure.</div>
@@ -839,7 +839,7 @@
                         </details>
 
                         <details class="subsection">
-                            <summary>Stream Fault Tolerance</summary>
+                            <summary>Stream Fault Tolerance [Rolling Checkpoints, Microbatching]</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Strategies to ensure data integrity and state recovery when stream processors fail.<br><br>
                         

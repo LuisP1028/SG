@@ -374,8 +374,7 @@
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Column-oriented storage groups values by column rather than row, enabling high compression ratios through run-length encoding and bitmap indices, accelerating analytical queries on large datasets by reading only relevant columns during scans and aggregations.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> High compression/fast analytics; excels at aggregating specific fields (e.g., "Sum Sales"), but joining multiple tables is often slower.</div>
-                                <div class="trade-offs"><span class="label">RUN LENGTH ENCODING:</span> Compresses sequential repeats. Instead of storing [Red, Red, Red, Blue, Blue], the database stores (Red, 3), (Blue, 2)</div>
-                                <div class="trade-offs"><span class="label">BITMAP ENCODING:</span>VERY SIMILAR TO ONEHOTENCODING. Creates a separate binary array (a string of 0s and 1s) for every unique value in a column. Bitmap encoding for low-cardinality: Values [red, blue, red, red, green] → bitmaps: red: 1011, blue: 0100, green: 0001. Each bit shows if row has that value. </div>
+                                <div class="trade-offs"><span class="label">BITMAP ENCODING & COMPRESSION METHODS:</span> Bitmapping turns low cardinality data into binary arrays / binary vectors (uncompressed). Run-Length encoding runs over this bitmap and instead of storing every bit, RLE collapses runs (e.g., "900,000 zeros") into a tiny count + flag. </div>
                                 <div class="examples"><span class="label">Examples:</span> Redshift, Snowflake, ClickHouse (Data Warehousing/OLAP).</div>
                             </div>
                         </details>
@@ -447,7 +446,7 @@
                         <details class="subsection">
                             <summary>Leaderless (AVAILABILITY > CONSISTENCY) [GREAT FOR SPOTTY ENVIRONMENTS]</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Leaderless replication distributes writes and reads across nodes using quorums (W + R > N) for consistency, employing hinted handoffs and anti-entropy for repair, prioritizing availability over strict ordering in highly fault-tolerant, partition-resilient environments.<br>
+                                <span class="label">Description:</span> Leaderless replication distributes writes and reads across nodes using quorums [W + R > N; W (write acknowledgments needed) and R (nodes queried for reads)] for consistency, prioritizing availability over strict ordering in partition-resilient environments.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Max availability; hard to ensure linearizability; risk of stale reads (requires read repair).</div>
                                 <div class="use-cases"><span class="label">Use Cases:</span> Amazon Dynamo, Cassandra, Riak (always-on shopping carts).</div>
                                 <div class="note">N is total data copies.<br>W and R are the minimum nodes required to confirm a write or read.<br>If W + R > N, the write group and read group are mathematically forced to overlap by at least one node. This guarantees every read operation accesses a node holding the most recent update.</div>

@@ -585,7 +585,7 @@
                         <details class="subsection">
                             <summary>Linearizability [RECENCY GUARANTEE]</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Linearizability makes a distributed system appear as a single coherent copy with atomic operations visible immediately, satisfying strict consistency but incurring latency from synchronization. In other words, as soon as one client successfully completes a write, all clients reading from the database must be able to see the value just written.<br>
+                                <span class="label">Description:</span> Linearizability makes a distributed system appear as a single coherent copy with [atomic operations visible immediately], satisfying strict consistency but incurring latency from synchronization. In other words, as soon as one client successfully completes a write, all clients reading from the database must be able to see the value just written.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Network delays kill performance; system halts during partitions (CAP Theorem).</div>
                             </div>
                         </details>
@@ -734,7 +734,7 @@
                         <details class="subsection">
                             <summary>Change Data Capture (CDC) (Dashboard Creation)</summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Change Data Capture (CDC) reads database changes from the Write-Ahead Log (WAL) or triggers, turning inserts/updates/deletes into a real-time stream of events. This decouples the source DB from multiple consumers (e.g., dashboards, analytics), each processing the same changes independently without overloading the database.<br>
+                                <span class="label">Description:</span> Change Data Capture (CDC) reads database changes from the Write-Ahead Log (WAL) or triggers, turning inserts/updates/deletes into a real-time stream of events.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Allows derived data systems (search/cache) to sync with the primary DB reliably.</div>
                                 <div class="trade-offs"><span class="label">Trigger:</span> A database trigger is a rule that automatically runs custom code when a table change (insert, update, delete) occurs, allowing CDC to capture and stream those events.</div>
                             </div>

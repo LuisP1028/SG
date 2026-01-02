@@ -363,7 +363,7 @@
                         <details class="subsection">
                             <summary>Page-Oriented (B-Trees) [MUTABLE] [EFFICIENT RANGE SCANS] </summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> Page-oriented engines like B-trees organize data in fixed-size blocks with balanced tree indices for range queries and updates, performing in-place modifications with write-ahead logging for crash recovery, balancing read/write performance in transactional databases.<br>
+                                <span class="label">Description:</span> A B-tree stores data in fixed-size pages, supports in-place overwrites for updates, and maintains balance by splitting overflowing nodes (promoting a key to the parent) on insertion, or by borrowing from siblings/merging underflow nodes on deletion—propagating changes up to the root as needed.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Fast, predictable reads; write amplification (changing 1 byte rewrites 4KB).</div>
                                 <div class="examples"><span class="label">Examples:</span> PostgreSQL, MySQL, SQL Server (transactional systems).</div>
                             </div>

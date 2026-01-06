@@ -373,15 +373,23 @@
                             <summary>Column-Oriented Storage</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Column-oriented storage groups values by column rather than row, enabling high compression ratios through run-length encoding and bitmap indices, accelerating analytical queries on large datasets by reading only relevant columns during scans and aggregations.<br>
+                                
+                                <!-- INSERTED SECTION START -->
+                                <div class="use-case">
+                                    <ul>
+                                        <li>
+                                            <span class="label">DEFENSE SCENARIO:</span> 
+                                            <strong>Global Logistics Aggregation</strong> — Commanders track millions of supply assets, from rations to ammunition, across global theaters. Columnar databases excel here by compressing repetitive text data (like "MRE Type A" appearing millions of times) and allowing rapid summation. A general asks for "Total Fuel Reserves in the Pacific"; the engine scans only the "Region" and "Quantity" columns. It ignores irrelevant details like "Serial Number" or "Expiration Date," providing a near-instant readiness assessment essential for strategic planning.
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- INSERTED SECTION END -->
+                        
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> High compression/fast analytics; excels at aggregating specific fields (e.g., "Sum Sales"), but joining multiple tables is often slower.</div>
                                 <div class="trade-offs"><span class="label">BITMAP ENCODING & COMPRESSION METHODS:</span> Bitmapping turns low cardinality data into binary arrays / binary vectors (uncompressed). Run-Length encoding runs over this bitmap and instead of storing every bit, RLE collapses runs (e.g., "900,000 zeros") into a tiny count + flag. </div>
                                 <div class="examples"><span class="label">Examples:</span> Redshift, Snowflake, ClickHouse (Data Warehousing/OLAP).</div>
                             </div>
                         </details>
-
-                    </div>
-                </details>
-
                 <!-- Chapter 4 -->
                 <details class="chapter">
                     <summary>4. Data Encoding (Chapter 4)</summary>

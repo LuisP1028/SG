@@ -373,16 +373,25 @@
                             <summary>Column-Oriented Storage</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Column-oriented storage groups values by column rather than row, enabling high compression ratios through run-length encoding and bitmap indices, accelerating analytical queries on large datasets by reading only relevant columns during scans and aggregations.<br>
+                                <details class="subsection">
+                                    <summary>Linearizability [RECENCY GUARANTEE]</summary>
+                                    <div class="subsection-content">
+                                        <span class="label">Description:</span> Linearizability makes a distributed system appear as a single coherent copy with [atomic operations visible immediately], satisfying strict consistency but incurring latency from synchronization. In other words, as soon as one client successfully completes a write, all clients reading from the database must be able to see the value just written.<br>
+                                        
+                                        <!-- INSERTED SECTION START -->
+                                        <div class="use-case">
+                                            <ul>
+                                                <li>
+                                                    <span class="label">INFRASTRUCTURE SCENARIO:</span> 
+                                                    <strong>Rail Interlocking</strong> — Rail signaling manages exclusive track blocks. If Train A claims Block 101, the state change must be linearizable. If Train B queries Block 101 status milliseconds later, there is a real-time dependency: it must see "Occupied." Relying on asynchronous replication could allow Train B to read a stale "Clear" signal from a lagging replica, leading to a head-on collision. The physical impossibility of two trains occupying the same space demands zero replication lag (strong consistency).
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <!-- INSERTED SECTION END -->
                                 
-                                <!-- INSERTED SECTION START -->
-                                <div class="use-case">
-                                    <ul>
-                                        <li>
-                                            <span class="label">DEFENSE SCENARIO:</span> 
-                                            <strong>Global Logistics Aggregation</strong> — Commanders track millions of supply assets, from rations to ammunition, across global theaters. Columnar databases excel here by compressing repetitive text data (like "MRE Type A" appearing millions of times) and allowing rapid summation. A general asks for "Total Fuel Reserves in the Pacific"; the engine scans only the "Region" and "Quantity" columns. It ignores irrelevant details like "Serial Number" or "Expiration Date," providing a near-instant readiness assessment essential for strategic planning.
-                                        </li>
-                                    </ul>
-                                </div>
+                                        <div class="trade-offs"><span class="label">Trade-offs:</span> Network delays kill performance; system halts during partitions (CAP Theorem).</div>
+                                    </div>
+                                </details>
                                 <!-- INSERTED SECTION END -->
                         
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> High compression/fast analytics; excels at aggregating specific fields (e.g., "Sum Sales"), but joining multiple tables is often slower.</div>

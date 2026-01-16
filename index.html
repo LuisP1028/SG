@@ -576,7 +576,11 @@
                                     
                                     <strong>2. The Shrinking Phase (Release)</strong><br>
                                     Locks are released when the transaction commits or aborts.<br>
-                                    <em>Crucial Rule:</em> No <strong>new</strong> locks can be acquired once the transaction begins releasing them.
+                                    <em>Crucial Rule:</em>
+                                    <ul>
+                                        <li><strong>Shared (S) Lock:</strong> Used for reading. It allows other transactions to read the same data simultaneously but prevents anyone from modifying it.</li>
+                                        <li><strong>Exclusive (X) Lock:</strong> Used for writing. It completely blocks others from reading or modifying the data, ensuring sole access for updates.</li>
+                                    </ul>
                                 </div>
                         
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Perfect integrity; performance penalty due to locking overhead (2PL) or high abort rates (Serializable Snapshot Isolation).</div>

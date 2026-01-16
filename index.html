@@ -482,6 +482,10 @@
                             <summary>Read-Your-Writes</summary>
                             <div class="subsection-content">
                                 <span class="label">Description:</span> Read-your-writes consistency ensures a user sees their own modifications immediately after writing, often implemented by directing subsequent reads to the same replica or using causal tracking, preventing surprises in user sessions across distributed replicas.<br>
+                                <ul>
+                                    <li><strong>Directing to the same replica:</strong> If you save data to Server A, your next view loads from Server A, which already has your update.</li>
+                                    <li><strong>Causal tracking:</strong> The system gives you a digital receipt (like a timestamp) for your update. Any server you ask for data later checks this receipt to ensure it's fully updated before replying.</li>
+                                </ul>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Requires routing user reads to the specific leader/replica handling their write.</div>
                             </div>
                         </details>

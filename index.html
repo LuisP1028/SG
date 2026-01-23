@@ -384,7 +384,11 @@
                         <details class="subsection">
                             <summary>Page-Oriented (B-Trees) [MUTABLE] [EFFICIENT RANGE SCANS] </summary>
                             <div class="subsection-content">
-                                <span class="label">Description:</span> A B-tree stores data in fixed-size pages, supports in-place overwrites for updates, and maintains balance by splitting overflowing nodes (promoting a key to the parent) on insertion, or by borrowing from siblings/merging underflow nodes on deletion—propagating changes up to the root as needed.<br>
+                                <span class="label">Description:</span>
+                                <span class="eye-btn" onclick="document.querySelector('.retro-viewport iframe').src='b-tree.html'; document.querySelector('.retro-viewport').classList.add('active');">
+                                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                                </span> 
+                                A B-tree stores data in fixed-size pages, supports in-place overwrites for updates, and maintains balance by splitting overflowing nodes (promoting a key to the parent) on insertion, or by borrowing from siblings/merging underflow nodes on deletion—propagating changes up to the root as needed.<br>
                                 <div class="trade-offs"><span class="label">Trade-offs:</span> Fast, predictable reads; write amplification (changing 1 byte rewrites 4KB).</div>
                                 <div class="examples"><span class="label">Examples:</span> PostgreSQL, MySQL, SQL Server (transactional systems).</div>
                             </div>

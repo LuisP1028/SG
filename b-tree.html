@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B-Tree Visualization: Ditherpunk</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        canvas {
+            /* Keep aspect ratio but fit window */
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* Crisp retro pixels */
+            image-rendering: pixelated; 
+            image-rendering: crisp-edges;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="mainCanvas"></canvas>
+
+<script>
+/**
+ * B-TREE VISUALIZATION ENGINE
+ * Style: Ditherpunk (Atkinson Dithering)
+ * Palette: #00FF00 (Green) / #000000 (Black)
+ */
+
+const CONFIG = {
+    virtualWidth: 640,  // Low internal resolution for retro feel & performance
+    virtualHeight: 360,
+    colorGreen: [0, 255, 0],
+    colorBlack: [0, 0, 0],
+    animSpeed: 0.008, // Global animation progression speed
+    pauseTime: 60     // Frames to pause between stages
+};
+
+// --- SCENE STATE MANAGEMENT ---
+
+const STATE = {
+    SETUP: 0,
+    INSERT: 1,
+    OVERFLOW: 2,
+    SPLIT: 3,
+    PROMOTE: 4,
+    LINK: 5,
+    RESET: 6
+};
+
+let currentState = STATE.SETUP;
+let progress = 0; // 0.0 to 1.0 for animations
+let pauseTimer = 0;
+let flashCounter = 0; // For glitch effects
+
+// --- CANVAS SETUP ---
+
+const canvas = document.getElementById('mainCanvas');
+const ctx = canvas.getContext('2d', { alpha: false });
+
+// Off-screen buffer for pre-dither rendering
+const buffer = document.createElement('canvas');
+buffer.width = CONFIG.virtualWidth;
+buffer.height = CONFIG.virtualHeight;
+const bCtx = buffer.getContext('2d', { willReadFrequently: true });
+
+// Resize Handler
+function onResize() {
+    canvas.width = CONFIG.virtualWidth;
+    canvas.height = CONFIG.virtualHeight;
+}
+window.addEventListener('resize', onResize);
+onResize();
+
+// --- LOGIC HELPER FUNCTIONS ---
+
+function lerp(start, end, t) {
+    return start + (end - start) * t;
+}
+
+function easeInOut(t) {
+    return t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+}
+
+// Draw a "Node" box
+function drawNode(ctx, x, y, width, keys, highlightIndex = -1, isError = false) {
+    const h = 40;
+    const slotW = width / Math.max(keys.length, 1);
+    
+    ctx.strokeStyle = "#FFF";
+    ctx.lineWidth = 2;
+    
+    if (isError && Math.random() > 0.5) {
+        ctx.strokeStyle = "#000"; // Flicker
+    }
+
+    // Box
+    ctx.strokeRect(x - width/2, y - h/2, width, h);
+    
+    // Slots lines
+    ctx.beginPath();
+    for (let i = 1; i < keys.length; i++) {
+        let lx = (x - width/2) + (i * slotW);
+        ctx.moveTo(lx, y - h/2);
+        ctx.lineTo(lx, y + h/2);
+    }
+    ctx.stroke();
+
+    // Text
+    ctx.fillStyle = "#FFF";
+    ctx.font = "bold 16px Courier New";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    keys.forEach((k, i) => {
+        let kx = (x - width/2) + (i * slotW) + (slotW/2);
+        
+        // Highlight logic
+        if (i === highlightIndex) {
+            ctx.fillStyle = "#FFF";
+            ctx.fillRect(kx - 10, y - 10, 20, 20);
+            ctx.fillStyle = "#000"; // Inverted text
+        } else {
+            ctx.fillStyle = "#FFF";
+        }
+        ctx.fillText(k, kx, y);
+    });
+}
+
+function drawArrow(ctx, x1, y1, x2, y2) {
+    const headLen = 8;
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    ctx.strokeStyle = "#FFF";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI / 6), y2 - headLen * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(x2 - headLen * Math.cos(angle + Math.PI / 6), y2 - headLen * Math.sin(angle + Math.PI / 6));
+    ctx.fill();
+}
+
+function drawLabel(ctx, text) {
+    ctx.fillStyle = "#FFF";
+    ctx.font = "bold 20px Courier New";
+    ctx.textAlign = "left";
+    ctx.fillText("> " + text, 20, 30);
+    // Blinking cursor
+    if (Math.floor(Date.now() / 500) % 2 === 0) {
+        ctx.fillRect(ctx.measureText("> " + text).width + 25, 15, 10, 20);
+    }
+}
+
+// --- RENDER SCENE ---
+
+function renderScene(ctx) {
+    // Clear buffer with Black
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, CONFIG.virtualWidth, CONFIG.virtualHeight);
+    
+    const cx = CONFIG.virtualWidth / 2;
+    const topY = 100;
+    const botY = 250;
+    
+    // Animation easing
+    const t = easeInOut(progress);
+
+    // --- STATE MACHINE VISUALS ---
+
+    if (currentState === STATE.SETUP) {
+        drawLabel(ctx, "STATUS: PAGE FULL");
+        
+        // Parent
+        drawNode(ctx, cx, topY, 60, [50]);
+        // Child
+        drawNode(ctx, cx, botY, 120, [10, 20, 30]);
+        // Pointer
+        drawArrow(ctx, cx - 15, topY + 20, cx, botY - 20);
+
+    } 
+    else if (currentState === STATE.INSERT) {
+        drawLabel(ctx, "INSERTING KEY: 25");
+
+        // Parent
+        drawNode(ctx, cx, topY, 60, [50]);
+        
+        // Child Expanding
+        const currentWidth = lerp(120, 160, t);
+        
+        // Simulating the sort insert visually
+        // Start: [10, 20, 30] ... Incoming 25
+        // End: [10, 20, 25, 30]
+        
+        // We draw the box
+        // Calculate relative positions for items
+        let keys = [10, 20, 25, 30];
+        // 25 comes from top
+        let yOffset25 = lerp(-50, 0, t);
+        
+        // Box
+        drawNode(ctx, cx, botY, currentWidth, [10, 20, " ", 30]); // Empty slot for anim
+        
+        // Draw the moving "25"
+        ctx.fillStyle = "#FFF";
+        ctx.font = "bold 16px Courier New";
+        ctx.textAlign = "center";
+        let slotW = currentWidth / 4;
+        let x25 = (cx - currentWidth/2) + (2 * slotW) + (slotW/2);
+        
+        ctx.fillText("25", x25, botY + yOffset25);
+
+        drawArrow(ctx, cx - 15, topY + 20, cx, botY - 20);
+    }
+    else if (currentState === STATE.OVERFLOW) {
+        drawLabel(ctx, "ERROR: OVERFLOW DETECTED");
+        
+        // Parent
+        drawNode(ctx, cx, topY, 60, [50]);
+        
+        // Glitching Child
+        flashCounter++;
+        let isError = true;
+        
+        drawNode(ctx, cx, botY, 160, [10, 20, 25, 30], -1, isError);
+        drawArrow(ctx, cx - 15, topY + 20, cx, botY - 20);
+    }
+    else if (currentState === STATE.SPLIT) {
+        drawLabel(ctx, "ACTION: SPLIT NODES");
+
+        // Parent
+        drawNode(ctx, cx, topY, 60, [50]);
+
+        // Splitting Logic
+        // Left node moves left, Right node moves right
+        const separation = lerp(0, 60, t);
+        
+        // Left Node [10, 20]
+        drawNode(ctx, cx - separation, botY, 80, [10, 20]);
+        
+        // Right Node [30]
+        drawNode(ctx, cx + separation + 20 /*offset for symmetry*/, botY, 40, [30]);
+
+        // Median 25 hovering in middle
+        ctx.fillStyle = "#FFF";
+        ctx.fillRect(cx - 10, botY - 10, 20, 20); // Highlight box
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 16px Courier New";
+        ctx.textAlign = "center";
+        ctx.fillText("25", cx, botY + 5);
+
+        // Old pointer fading or staying attached to "center" conceptual area
+        drawArrow(ctx, cx - 15, topY + 20, cx, botY - 20);
+    }
+    else if (currentState === STATE.PROMOTE) {
+        drawLabel(ctx, "ACTION: PROMOTE MEDIAN");
+
+        // Median moves from botY to topY
+        const moveY = lerp(botY, topY, t);
+        const moveX = lerp(cx, cx - 15, t); // Moving next to 50
+        
+        // Parent expands to make room
+        const pWidth = lerp(60, 80, t);
+        
+        // Draw Left/Right children static
+        drawNode(ctx, cx - 60, botY, 80, [10, 20]);
+        drawNode(ctx, cx + 80, botY, 40, [30]);
+
+        // Draw Parent (Visual trick: draw partial, then draw moving number)
+        // Parent base
+        ctx.strokeStyle = "#FFF";
+        ctx.strokeRect(cx - pWidth/2, topY - 20, pWidth, 40);
+        // 50 is shifted right
+        let x50 = lerp(cx, cx + 15, t);
+        ctx.fillStyle = "#FFF";
+        ctx.fillText("50", x50, topY);
+
+        // Moving 25
+        ctx.fillStyle = "#FFF";
+        ctx.fillRect(moveX - 10, moveY - 10, 20, 20);
+        ctx.fillStyle = "#000";
+        ctx.fillText("25", moveX, moveY + 5);
+        
+        // Pointer logic: Old pointer disappears as structure changes
+    }
+    else if (currentState === STATE.LINK) {
+        drawLabel(ctx, "STATUS: POINTERS CREATED");
+
+        // Parent settled [25, 50]
+        drawNode(ctx, cx, topY, 80, [25, 50], 0); // Highlight 25
+
+        // Children
+        drawNode(ctx, cx - 60, botY, 80, [10, 20]);
+        drawNode(ctx, cx + 80, botY, 40, [30]);
+
+        // Animate Pointers growing from 25
+        const pLen = lerp(0, 1, t);
+        
+        if (pLen > 0) {
+            // Left Pointer (< 25)
+            // Starts from left side of 25 slot
+            let p1x = cx - 20; 
+            let p1y = topY + 20;
+            let t1x = cx - 60;
+            let t1y = botY - 20;
+            drawArrow(ctx, p1x, p1y, p1x + (t1x-p1x)*pLen, p1y + (t1y-p1y)*pLen);
+
+            // Right Pointer (> 25)
+            // Starts from right side of 25 slot (middle of node)
+            let p2x = cx;
+            let p2y = topY + 20;
+            let t2x = cx + 80;
+            let t2y = botY - 20;
+            drawArrow(ctx, p2x, p2y, p2x + (t2x-p2x)*pLen, p2y + (t2y-p2y)*pLen);
+            
+            // Old Pointer for 50 (>=50)
+            // Just static
+             drawArrow(ctx, cx + 20, topY + 20, cx + 120, botY - 20);
+             // Ghost node for > 50 just to hint context
+             ctx.globalAlpha = 0.3;
+             drawNode(ctx, cx + 120, botY, 40, ["..."]);
+             ctx.globalAlpha = 1.0;
+        }
+    }
+    else if (currentState === STATE.RESET) {
+        // Fade out
+        ctx.globalAlpha = 1 - t;
+        drawLabel(ctx, "BALANCE RESTORED");
+        drawNode(ctx, cx, topY, 80, [25, 50]);
+        drawNode(ctx, cx - 60, botY, 80, [10, 20]);
+        drawNode(ctx, cx + 80, botY, 40, [30]);
+        drawArrow(ctx, cx - 20, topY + 20, cx - 60, botY - 20);
+        drawArrow(ctx, cx, topY + 20, cx + 80, botY - 20);
+        ctx.globalAlpha = 1.0;
+    }
+}
+
+// --- DITHERING ALGORITHM (Atkinson) ---
+
+function ditherAndDraw() {
+    // 1. Get pixel data from buffer
+    const w = CONFIG.virtualWidth;
+    const h = CONFIG.virtualHeight;
+    const imgData = bCtx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    // 2. Iterate
+    for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+            const i = (y * w + x) * 4;
+            
+            // Convert to grayscale brightness
+            const oldPixel = data[i]; // Since we drew white on black, R=G=B. Just take R.
+            
+            // Threshold
+            const newPixel = oldPixel > 128 ? 255 : 0;
+            const err = (oldPixel - newPixel) >> 3; // Divide by 8
+
+            // Set current pixel to Green or Black
+            if (newPixel === 255) {
+                data[i] = 0;     // R
+                data[i+1] = 255; // G
+                data[i+2] = 0;   // B
+            } else {
+                data[i] = 0;
+                data[i+1] = 0;
+                data[i+2] = 0;
+            }
+
+            // Distribute Error (Atkinson)
+            // neighbor += err
+            
+            if (x + 1 < w)               data[((y)*w + (x+1))*4]     += err;
+            if (x + 2 < w)               data[((y)*w + (x+2))*4]     += err;
+            if (x - 1 >= 0 && y + 1 < h) data[((y+1)*w + (x-1))*4]   += err;
+            if (y + 1 < h)               data[((y+1)*w + (x))*4]     += err;
+            if (x + 1 < w && y + 1 < h)  data[((y+1)*w + (x+1))*4]   += err;
+            if (y + 2 < h)               data[((y+2)*w + (x))*4]     += err;
+        }
+    }
+
+    // 3. Put data to main canvas
+    ctx.putImageData(imgData, 0, 0);
+}
+
+// --- MAIN LOOP ---
+
+function loop() {
+    // 1. Update State
+    if (pauseTimer > 0) {
+        pauseTimer--;
+    } else {
+        progress += CONFIG.animSpeed;
+        if (progress >= 1.0) {
+            progress = 0;
+            currentState++;
+            pauseTimer = CONFIG.pauseTime;
+            
+            if (currentState > STATE.RESET) {
+                currentState = STATE.SETUP;
+                pauseTimer = 60;
+            }
+        }
+    }
+
+    // 2. Render Scene to Buffer
+    renderScene(bCtx);
+
+    // 3. Dither and Render to Screen
+    ditherAndDraw();
+
+    requestAnimationFrame(loop);
+}
+
+// Start
+loop();
+
+</script>
+</body>
+</html>
